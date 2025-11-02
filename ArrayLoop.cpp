@@ -46,11 +46,9 @@ void searchArray(const std::vector<T>& arr, T choice){
 
 template <typename T>
 void printArray(const std::vector<T>& arr){
-    std::size_t length{arr.size()};
-    for(std::size_t index{0}; index < length; index++){
-        std::cout<<" ";
-        std::cout<<arr[index];
-    }
+    for(int index : arr)
+        std::cout<<index<<" ";
+    std::cout<<" ";
 
 }
 
