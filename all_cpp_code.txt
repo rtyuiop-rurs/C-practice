@@ -1,0 +1,3051 @@
+
+--- ./AccessFunction.cpp ---
+
+#include<iostream>
+#include<string_view>
+#include<string>
+
+class Student{
+    int s_id{0};
+    std::string s_name{"none"};
+    int s_password{0};
+
+    void printCreate(){
+       std::cout<<"Name: "<<s_name<<" ID: "<<s_id<<" Password: "<<s_password;
+    }
+
+    public:
+        Student(int id, std::string_view name, int password)
+        : s_id{id}
+        , s_name{name}
+        , s_password{password}
+    {
+        std::cout<<"Constructor constructed!\n";
+        printCreate();
+    }
+
+};
+
+
+int main(){
+    Student Jimmy{1221202134, "Jimmy", 140523};
+    Student James{1221250525, "James", 150523};
+}
+--- ./addWatch.cpp ---
+
+#include<iostream>
+
+struct Revenue{
+    double adWatched{};
+    double userClicks{};
+    double earnings{};
+};
+
+void printRevenue(const Revenue& rev){
+    std::cout<<"Ads watched: "<<rev.adWatched<<"\n";
+    std::cout<<"User clicked: "<<rev.userClicks<<"\n";
+    std::cout<<"Earnings: "<<rev.earnings<<"\n";
+    std::cout<<"Overall earnings: "<<(rev.adWatched* rev.earnings * rev.userClicks/100)<<"\n";
+}
+
+Revenue getProfits(){
+    Revenue f1{};
+    std::cout<<"Enter the amounts of Ads watched (percentage): ";
+    std::cin>>f1.adWatched;
+    std::cout<<"Enter the amounts of User clicked: ";
+    std::cin>>f1.userClicks;
+    std::cout<<"Enter the amounts of Earnings: ";
+    std::cin>>f1.earnings;
+    return f1;
+}
+
+
+int main(){
+    Revenue f1{getProfits()};
+    printRevenue(f1);
+}
+--- ./AnimalEnum.cpp ---
+
+#include <iostream>
+#include <string_view> // C++17
+//#include <string> // for C++14
+
+enum class Animal
+{
+    pig,
+    chicken,
+    goat,
+    cat,
+    dog,
+    duck,
+};
+
+constexpr std::string_view getAnimalName(Animal animal) // C++17
+// const std::string getAnimalName(Animal animal) // C++14
+{
+    // If C++20 capable, could use `using enum Animal` here to reduce Animal prefix redundancy
+    switch (animal)
+    {
+        case Animal::chicken:
+            return "chicken";
+        case Animal::duck:
+            return "duck";
+        case Animal::pig:
+            return "pig";
+        case Animal::goat:
+            return "goat";
+        case Animal::cat:
+            return "cat";
+        case Animal::dog:
+            return "dog";
+
+        default:
+            return "???";
+    }
+}
+
+void printNumberOfLegs(Animal animal)
+{
+    std::cout << "A " << getAnimalName(animal) << " has ";
+
+    // If C++20 capable, could use `using enum Animal` here to reduce Animal prefix redundancy
+    switch (animal)
+    {
+        case Animal::chicken:
+        case Animal::duck:
+            std::cout << 2;
+            break;
+
+        case Animal::pig:
+        case Animal::goat:
+        case Animal::cat:
+        case Animal::dog:
+            std::cout << 4;
+            break;
+
+        default:
+            std::cout << "???";
+            break;
+    }
+
+    std::cout << " legs.\n";
+}
+
+int main()
+{
+    printNumberOfLegs(Animal::cat);
+    printNumberOfLegs(Animal::chicken);
+
+    return 0;
+}
+--- ./Apple.cpp ---
+
+#include<iostream>
+#include<string_view>
+
+std::string_view getQuantityPhrase(int x){
+    if(x < 0)
+        return "Negative";
+    else if( x == 0)
+        return "no";
+    else if(x == 1)
+        return "a single";
+    else if(x == 2)
+        return "a couple";
+    else if(x == 3)
+        return "a few";
+    else if(x > 3)
+        return "many";
+    else
+        return "lots of";
+}
+
+std::string_view getApplesPluralized(int y){
+    if( y == 1){
+        return "Apple";
+    }
+    else{
+        return "Apples";
+    }
+}
+
+int main(){
+    constexpr int maryApples { 3 };
+    std::cout << "Mary has " << getQuantityPhrase(maryApples) << ' ' << getApplesPluralized(maryApples) << ".\n";
+
+    std::cout << "How many apples do you have? ";
+    int numApples{};
+    std::cin >> numApples;
+
+    std::cout << "You have " << getQuantityPhrase(numApples) << ' ' << getApplesPluralized(numApples) << ".\n";
+
+    return 0;
+}
+--- ./Array2.cpp ---
+
+#include<iostream>
+#include<string>
+#include<vector>
+
+void passArray(std::vector<char>& hello){
+    for(int i=0; i<= 9; i++){
+        std::cout<<hello[i];
+    }
+}
+
+int main(){
+    std::vector<char> hello(10);
+    std::cout<<"The array have "<<std::size(hello)<<" elements\n";
+    for(int i=0; i<= 9; i++){
+        std::cout<<"Enter 10 letters: letter"<<i<<": ";
+        std::cin>>hello[i];
+    }
+    passArray(hello);
+
+}
+--- ./ArrayEnum.cpp ---
+
+#include<iostream>
+#include<vector>
+#include<cassert>
+
+namespace Animals{
+    enum animals{
+        chicken, 
+        dog,
+        cat,
+        elephant,
+        duck,
+        snake,
+        animalcount,
+    };
+}
+
+
+std::vector legs{2,4,4,4,2,0};
+
+
+int main(){
+    assert(std::size(legs) == Animals::animalcount);
+    std::cout<<legs[Animals::elephant];
+    std::cout<<legs[Animals::chicken];
+}
+--- ./ArrayLoop.cpp ---
+
+#include <iostream>
+#include <vector>
+#include<limits>
+
+void ignoreLine(){
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+int getInput(){
+    int choice {};
+    do
+    {
+        std::cout << "Enter a number between 1 and 9: ";
+        std::cin >> choice;
+        if (!std::cin)
+            std::cin.clear(); 
+
+        ignoreLine(); 
+
+    } while (choice < 1 || choice > 9);
+
+    return choice;
+}
+
+
+template <typename T>
+void searchArray(const std::vector<T>& arr, T choice){
+    std::size_t length{arr.size()};
+    bool found;
+    std::size_t foundIndex{};
+    for(std::size_t index{0}; index < length; index++){
+        if(arr[index] == choice){
+            found = true;
+            foundIndex = index;
+            break;
+        }
+    }
+
+    if(found){
+        std::cout<<"The number "<<choice<<" has index "<<foundIndex<<"\n";
+    }
+    else{
+        std::cout<<"Number was not found";
+    }
+}
+
+template <typename T>
+void printArray(const std::vector<T>& arr){
+    for(int index : arr)
+        std::cout<<index<<" ";
+    std::cout<<" ";
+
+}
+
+
+int main()
+{
+    std::vector arr{ 4, 6, 7, 3, 8, 2, 1, 9 };
+    int choice{getInput()};
+    searchArray(arr, choice);
+    printArray(arr);
+    return 0;
+}
+--- ./Arraypass.cpp ---
+
+#include <iostream>
+#include <vector>
+#include <cassert>
+
+template <typename T>
+void printElement(const std::vector<T>& arr, int i){
+  if(i < 0  || i >= static_cast<int>(arr.size())){
+    std::cout<<"Invalid Index!!\n";
+  }
+  else{
+    std::cout<<"Elemen have value: "<<arr[static_cast<std::size_t>(i)]<<"\n";
+  }
+
+}
+
+int main()
+{
+    std::vector v1 { 0, 1, 2, 3, 4 };
+    printElement(v1, 2);
+    printElement(v1, 5);
+
+    std::vector v2 { 1.1, 2.2, 3.3 };
+    printElement(v2, 0);
+    printElement(v2, -1);
+
+    return 0;
+}
+--- ./ArrayPushpop.cpp ---
+
+#include<iostream>
+#include<vector>
+
+void printStack(const std::vector<int>& arr){
+    std::cout<<"\tStack:(";
+    if(arr.empty()){
+        std::cout<<"Empty";
+    }
+    for(auto elemen : arr)
+        std::cout<<elemen<<"  ";
+
+    std::cout<<")";
+    std::cout<<"\n";
+
+}
+
+void pushPrint(std::vector<int>& arr, int val){
+    arr.push_back(val);
+    std::cout<<"push: "<<val;
+}
+
+void popPrint(std::vector<int>& arr){
+    arr.pop_back();
+    std::cout<<"pop ";
+
+}
+
+
+int main(){
+    std::vector<int> arr{};
+    printStack(arr);
+    pushPrint(arr, 1);
+    printStack(arr);
+    pushPrint(arr, 2);
+    printStack(arr);
+    pushPrint(arr, 3);
+    printStack(arr);
+    popPrint(arr);
+    printStack(arr);
+    pushPrint(arr, 4);
+    printStack(arr);
+    popPrint(arr);
+    printStack(arr);
+    popPrint(arr);
+    printStack(arr);
+    popPrint(arr);
+    printStack(arr);
+
+}
+--- ./ArrayRanged.cpp ---
+
+#include<iostream>
+#include<vector>
+#include<string_view>
+#include<string>
+
+template <typename T>
+bool isValueinArray(std::vector<T>& arr, T value){
+    for(const auto& Name : arr){
+        if(Name == value){
+            return true;
+            break;
+        }
+    }
+    return false;
+}
+
+int main(){
+    std::vector<std::string_view> names{"Alex", "Betty", "Caroline", "Dave", "Emily", "Fred", "Greg", "Holly"};
+    std::string name{};
+    std::cout<<"Enter a name: ";
+    std::cin>>name;
+    bool found{isValueinArray<std::string_view>(names,name)};
+
+    if(found){
+        std::cout<<name<<" is found!";
+    }
+    else{
+        std::cout<<name<<" is not found!";
+    }
+}
+--- ./ArrayRanged2.cpp ---
+
+#include<iostream>
+#include<vector>
+#include<string_view>
+
+template <typename T>
+bool getList(std::vector<std::string_view>& arr, T data){
+    for(std::string_view Name : arr){
+        if(data == Name){
+            return true;
+            break;
+        }
+    }
+    return false;
+}
+int main(){
+    std::vector<std::string_view> monster{"Goblin", "Ogre", "Troll", "Zombie", "Dragon"};
+    std::string name{};
+    std::cout<<"Enter your monster: ";
+    std::cin>>name;
+    bool list{getList(monster,name)};
+
+    if(list){
+        std::cout<<name<<" monster is on the list!";
+    }
+    else{
+        std::cout<<name<<" is not on the list\n";
+        std::cout<<"Monsters on the list: "<<"\n";
+        for(std::string_view mon : monster){
+            std::cout<<mon<<" ";
+        }
+        std::cout<<"\n";
+    }
+}
+--- ./ArraySize.cpp ---
+
+#include<iostream>
+#include<vector>
+
+
+template<typename T>
+T findMax(const std::vector<T>& data){
+    T max{data[0]};
+    std::size_t length{data.size()};
+     if (length == 0){
+        return T{};
+    }
+    for(std::size_t index{1}; index < length; index++){
+        if(data[index] > max){
+            max = data[index];
+        }
+    }
+    return max;
+}
+
+int main()
+{
+    std::vector data1 { 84, 92, 76, 81, 56 };
+    std::cout << findMax(data1) << '\n';
+
+    std::vector data2 { -13.0, -26.7, -105.5, -14.8 };
+    std::cout << findMax(data2) << '\n';
+
+    std::vector<int> data3 { };
+    std::cout << findMax(data3) << '\n';
+
+    return 0;
+}
+--- ./C++ practice/practice_1.cpp ---
+
+#include<iostream>
+
+class EmployeePay{
+    double m_rh{40};
+    double m_ot{24.35};
+    double m_bp{18.50};
+    double m_th;
+    public:
+
+        double getTotalWage(){
+            std::cout<<"Enter your total hours worked: ";
+            std::cin>>m_th;
+            double ot_time;
+            if(m_th > 40){
+                ot_time = m_th - m_rh;
+            }
+            else if(ot_time == 0){
+                m_rh = m_th;
+            }
+            
+            double reg_wage = m_bp * m_rh;
+            double ot_wage  = m_ot * ot_time;
+            double t_wage   = reg_wage + ot_wage;
+
+            return t_wage;
+        }
+    
+};
+
+void print(EmployeePay& m){
+    double total_wage{m.getTotalWage()};
+    std::cout<<"your total wage is: "<<total_wage;
+}
+
+int main(){
+    EmployeePay m;
+    print(m);
+}
+--- ./C++ practice/practice_2.cpp ---
+
+#include<iostream>
+
+int getinput(){
+    int input{0};
+    int even{0};
+    int odd{0};
+    int sum{0};
+    for(int i=1; i<=10; i++){
+        std::cout<<"enter 10 numbers: ";
+        std::cin>>input;
+        if((input % 2) == 0){
+            even++;
+        }
+        else{
+            odd++;
+        }
+        sum += input;
+    }
+    std::cout<<"there are "<<even<<" even numbers\n";
+    std::cout<<"there are "<<odd<<" odd numbers\n";
+    std::cout<<"The sum is "<<sum;
+    return 0;
+}
+
+int main(){
+    getinput();
+    return 0;
+}
+--- ./C++ practice/practice_3.cpp ---
+
+#include<iostream>
+
+void printIceCream(){
+    std::cout<<"Welcome to YummyIceCream!\n";
+    std::cout<<"****** Ice-cream Flavour: ******\n";
+    std::cout<<"[C] chocolate\n";
+    std::cout<<"[V] vanilla\n";
+    std::cout<<"[S] strawberry\n";
+}
+
+void getInput(){
+    std::string name;
+    char flavour, choice;
+    int quantity;
+    double price, total_price;
+   do{
+    printIceCream();
+    std::cout<<"Enter order name: ";
+    std::cin>>name;
+    std::cout<<"Enter flavour: ";
+    std::cin>>flavour;
+    while(flavour != 'C' && flavour != 'V' && flavour != 'S'){
+        std::cout<<"incorrect choice!; reenter choice: ";
+        std::cin>>flavour;
+    }
+    std::cout<<"Enter quantity: ";
+    std::cin>>quantity;
+
+    switch(flavour){
+        case 'C' : price = 3.50;
+        break;
+        case 'V' : price = 3.00;
+        break;
+        case 'S' : price = 2.50;
+        break;
+        default : price = 0.0;
+    }
+
+    std::cout<<"Do you wanna buy more? <Y - yes N - no>";
+    std::cin>>choice;
+
+    price = price * quantity;
+    total_price += price;
+
+   }while(choice == 'Y' || choice == 'y');
+
+   std::cout<<"***RECEIPT***\n";
+   std::cout<<"Order Name: "<<name<<"\n";
+   std::cout<<"total price: "<<total_price<<"\n";
+    
+}
+
+int main(){
+    getInput();
+}
+--- ./Class3d.cpp ---
+
+#include<iostream>
+
+class point3d{
+    int m_x{};
+    int m_y{};
+    int m_z{};
+    public:
+        void setValues(int x, int y, int z){
+            m_x = x;
+            m_y = y;
+            m_z = z;
+        }
+        void print(){
+            std::cout<<"< "<<m_x<<" "<<m_y<<" "<<m_z<<" >";
+        }
+        bool isEqual(point3d& p1){
+            if(m_x == p1.m_x && m_y == p1.m_y && m_z == p1.m_z){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+
+};
+
+int main()
+{
+	point3d point1{};
+	point1.setValues(1, 2, 3);
+
+	point3d point2{};
+	point2.setValues(1, 2, 3);
+
+	std::cout << "point 1 and point 2 are" << (point1.isEqual(point2) ? "" : " not") << " equal\n";
+
+	point3d point3{};
+	point3.setValues(3, 4, 5);
+
+	std::cout << "point 1 and point 3 are" << (point1.isEqual(point3) ? "" : " not") << " equal\n";
+
+	return 0;
+}
+--- ./classStudent.cpp ---
+
+#include<iostream>
+#include<string_view>
+
+class Student{
+    int m_id{};
+    std::string m_name{};
+    double m_TotalMarks{};
+
+    public:
+        Student(int id = 0, std::string_view name = "empty", double TotalMarks = 0.0)
+        : m_id{id}
+        , m_name{name}
+        , m_TotalMarks{TotalMarks}
+        {
+            std::cout<<"Contructor contructed!";
+        }
+
+        void setValues(){
+            std::cout<<"Enter your Name: \n";
+            std::cin>>m_name;
+            std::cout<<"Enter your ID: \n";
+            std::cin>>m_id;
+            std::cout<<"Enter your total marks: \n";
+            std::cin>>m_TotalMarks;
+        }
+
+        std::string_view getName() const {return m_name;};
+        int getID() const {return m_id;};
+        double getmarks() const {return m_TotalMarks;};
+
+};
+
+
+double getExtraMarks(Student& f){
+    double totalMarks{f.getmarks()};
+    double extraMarks{};
+    std::cout<<"Enter your extra marks: \n";
+    std::cin>>extraMarks;
+    return totalMarks * extraMarks/100;
+}
+
+void printALL(Student& f){
+    double ExtraMarks{getExtraMarks(f)};
+    std::cout<<"Name: "<<f.getName()<<" "<<"ID: "<<f.getID()<<" "<<"Marks: "<<f.getmarks()<<" "<<"Extra Marks: "<<ExtraMarks;
+}
+
+int main(){
+    Student f{};
+    f.setValues();
+    printALL(f);
+}
+--- ./classTemplate.cpp ---
+
+#include<iostream>
+#include<string>
+
+template<typename T, typename U, typename V>
+class Triad{
+    T m_first;
+    U m_second;
+    V m_third;
+
+    public:
+        Triad(const T& first, const U& second, const V& third)
+        : m_first{first}
+        , m_second{second}
+        , m_third{third}
+        {
+
+        }
+
+        void print() const;
+
+        T first() const {return m_first;};
+        U Second() const {return m_second;};
+        V Third() const {return m_third;};
+};
+
+template<typename T, typename U, typename V>
+void Triad<T,U,V>::print() const{
+    std::cout<<"["<<m_first<<","<<m_second<<","<<m_third<<"]";
+}
+
+int main(){
+    Triad<int, int, int> t1{ 1, 2, 3 };
+	t1.print();
+	std::cout << '\n';
+	std::cout << t1.first() << '\n';
+
+	using namespace std::literals::string_literals;
+	const Triad t2{ 1, 2.3, "Hello"s };
+	t2.print();
+	std::cout << '\n';
+
+	return 0;
+}
+--- ./const.cpp ---
+
+#include <iostream>
+#include "constants.h"
+
+int main()
+{
+	std::cout << "How many students are in your class? ";
+	int students{};
+	std::cin >> students;
+
+
+	if (students > Constants::maxClassSize)
+		std::cout << "There are too many students in this class";
+	else
+		std::cout << "This class isn't too large";
+
+	return 0;
+}
+--- ./constants.h ---
+
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+namespace Constants{
+    inline constexpr int maxClassSize{30};
+}
+#endif
+--- ./Constructor++.cpp ---
+
+#include<iostream>
+#include<string_view>
+
+class Ball{
+    std::string m_color{"Black"};
+    double m_radius{10};
+
+    public:
+        Ball(double radius)
+        : Ball{"Black",radius}
+        {
+        }
+        Ball(std::string_view color = "Black", double radius = 10.0)
+        : m_color{color}
+        , m_radius{radius}
+        {
+            print();
+        }
+
+        
+    void print() const
+    {
+        std::cout << "Ball(" << m_color << ", " << m_radius << ")\n";
+    }
+
+};
+
+int main(){
+    Ball def{};
+    Ball blue{ "blue" };
+    Ball twenty{ 20.0 };
+    Ball blueTwenty{ "blue", 20.0 };
+
+    return 0;
+}
+--- ./Constructor.cpp ---
+
+#include<iostream>
+#include<string>
+#include<string_view>
+
+class Ball{
+    private:
+        std::string m_color{"none"};
+        double m_radius{0.0};
+
+    public:
+        Ball(std::string_view color, double radius )
+        : m_color{color}
+        , m_radius{radius}
+    {
+    }
+
+    const std::string_view getColor() const{return m_color;};
+    double getRadius() const{return m_radius;};
+};
+
+void print(Ball& ball){
+    std::cout<<ball.getColor()<<ball.getRadius();
+}
+
+
+
+int main()
+{
+	Ball blue { "blue", 10.0 };
+	print(blue);
+
+	Ball red { "red", 12.0 };
+	print(red);
+
+	return 0;
+}
+--- ./copyContructor.cpp ---
+
+#include <iostream>
+
+class Something
+{
+    int m_x{};
+
+public:
+    Something(int x)
+        : m_x{ x }
+    {
+        std::cout << "Normal constructor\n";
+    }
+
+    Something(const Something& s)
+        : m_x { s.m_x }
+    {
+        std::cout << "Copy constructor\n"; //copy constructor doesn't execute because of copy elision.
+    }
+
+    void print() const { std::cout << "Something(" << m_x << ")\n"; }
+};
+
+int main()
+{
+    Something s { Something { 5 } }; // focus on this line
+    s.print();
+
+    return 0;
+}
+--- ./CTADstructs.cpp ---
+
+#include <iostream>
+
+template <typename T>
+struct Triad
+{
+	T first {};
+	T second {};
+	T third {};
+};
+
+// If using C++17, we need to provide a deduction guide (not required in C++20)
+// A Triad with three arguments of the same type should deduce to a Triad<T>
+template <typename T>
+Triad(T, T, T) -> Triad<T>;
+
+template <typename T>
+void print(const Triad<T>& t)
+{
+	std::cout << '[' << t.first << ", " << t.second << ", " << t.third << ']';
+}
+
+int main()
+{
+	Triad t1{ 1, 2, 3 };
+	print(t1);
+
+	Triad t2{ 1.2, 3.4, 5.6 };
+	print(t2);
+
+	return 0;
+}
+--- ./CTAD_arrays.cpp ---
+
+#include<vector>
+#include<iostream>
+
+int main(){
+    std::vector<int> integral(3);
+    std::cout<<"Enter 3 integers: ";
+    for(int i=0; i <= 2; i++){
+        std::cin>>integral[i];
+    }
+    std::cout<<"the sum is: "<<integral[0] + integral [1] + integral [2]<<"\n";
+    std::cout<<"the product is: "<<integral[0] * integral [1] * integral [2]<<"\n";
+}
+--- ./dice_randgen.cpp ---
+
+#include<iostream>
+#include<random>
+
+int main(){
+    std::random_device rd{};
+    std::seed_seq ss{rd(), rd(), rd(), rd(), rd(), rd(), rd(), rd()};
+    std::mt19937 mt{ss};
+
+    std::uniform_int_distribution die10{1,10};
+
+    std::cout<<die10(mt);
+    
+    return 0;
+}
+--- ./Double_Test.cpp ---
+
+#include<iostream>
+
+double value(){
+    double x{};
+    std::cout<<"Enter a double value: ";
+    std::cin>>x;
+    return x;
+}
+
+char operation(){
+    char opp{};
+    std::cout<<"Enter +, -, *, or /: ";
+    std::cin>>opp;
+    return opp;
+}
+
+void calc(double x, double y, char opp){
+    if(opp == '-'){
+        std::cout<<x<<" - "<<y<<" = "<<x - y;
+    }
+    else if( opp == '+'){
+        std::cout<<x<<" + "<<y<<" = "<<x + y;
+    }
+    else if( opp == '*'){
+        std::cout<<x<<" * "<<y<<" = "<<x * y;
+    }
+    else if(opp == '/'){
+        std::cout<<x<<" / "<<y<<" = "<<x / y;
+    }
+    else{
+        return;
+    }
+}
+
+int main(){
+    double x{value()};
+    double y{value()};
+    char f{operation()};
+    calc(x,y,f);
+}
+--- ./do_whileloops.cpp ---
+
+#include<iostream>
+
+int getSelection(){
+    int x{};
+    do{
+        std::cout << "Please make a selection: \n";
+        std::cout << "1) Addition\n";
+        std::cout << "2) Subtraction\n";
+        std::cout << "3) Multiplication\n";
+        std::cout << "4) Division\n";
+        std::cin >> x;
+    }while(x < 1 || x > 4);
+    
+    return x;
+}
+
+int getResults(int y){
+    double result1{};
+    double result2{};
+    std::cout<<"Enter two numbers for operation: ";
+    std::cin>>result1>>result2;
+
+    switch(y){
+        case 1:
+            return result1 + result2;
+            break;
+        case 2:
+            return result1 - result2;
+            break;
+        case 3:
+            return result1 * result2;
+            break;
+        case 4:
+            return result1 / result2;
+            break;
+        default:
+            std::cout<<"Enter a proper value";
+            return 0;
+        }
+}
+
+int main(){
+    int choice{getSelection()};
+    int result{getResults(choice)};
+    std::cout<<result;
+
+}
+
+
+--- ./EvenOddGame.cpp ---
+
+#include<iostream>
+#include<limits>
+#include<string>
+#include "Random.h"
+
+void ignoreLine(){
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+bool evenOdd(int min, int max){
+    const int num{Random::get(min, max)};
+    int tries{};
+    std::string guesses{};
+    std::cout<<"How many tries?: ";
+    std::cin>>tries;
+    if(!std::cin){
+        std::cin.clear(); 
+        ignoreLine();
+        std::cout<<"Invalid input\n";
+        return false;    
+    }
+    ignoreLine();
+    for(int i = 1; i <= tries;){
+        std::cout<<"Guess if the number is Even or Odd #"<<i<<"\n";
+        std::cin>>guesses;
+         if (!std::cin) {    
+            std::cin.clear(); 
+            ignoreLine();  
+            std::cout << "Invalid input! Please enter a number.\n";
+            continue;      
+        }
+        if(guesses != "even" && guesses != "odd"){
+            std::cout<<"Only put even and odd please\n";
+            continue;
+        }
+        if(num % 2 == 0 && guesses == "even"){
+            std::cout<<"You got it right!\n";
+            std::cout<<"The number was: "<<num<<"\n";
+            return true;
+        }
+        else if(num % 2 != 0 && guesses == "odd"){
+            std::cout<<"You got it right!\n";
+            std::cout<<"The number was: "<<num<<"\n";
+            return true;
+        }
+        i++;
+    }
+    std::cout<<"Sorry you lose! the  number was "<<num<<"\n";
+    return false;
+
+}
+
+bool playAgain(bool f){
+    char choice{};
+    do{
+        std::cout<<"Do you want to play again? (y/n)\n ";
+        std::cin>>choice;
+        if (choice == 'y' || choice == 'Y') return true;
+        if (choice == 'n' || choice == 'N') return false;
+        else{
+            std::cout<<"Invalid input\n";
+            continue;
+        }
+    }while(f == false);
+    return true;
+}
+
+int main(){
+    int min{};
+    int max{};
+    std::cout<<"Enter the range of the random numbers (min - max): ";
+    std::cin>>min>>max;
+    while(true){
+        bool playgame{evenOdd(min, max)};
+        if(!playAgain(playgame)){
+            return false;
+        }
+    }
+
+    return 0;
+}
+
+
+
+--- ./Even_Odd.cpp ---
+
+#include<iostream>
+
+constexpr int isEven(int x){
+    return (x % 2) == 0;
+}
+
+int main(){
+
+    std::cout<<"Enter a number : ";
+    int x{};
+    std::cin>>x;
+
+    if(isEven(x)){
+        std::cout<<x<<" Is even";
+    }
+    else{
+        std::cout<<x<<" Is odd";
+    }
+
+}
+
+--- ./factorial.cpp ---
+
+#include<iostream>
+
+int calculateFactorial(int num) {
+    int factorial{1};
+    
+    if(num < 0){
+        std::cout << "Error! Factorial of a negative number doesn't exist.";
+        return -1; // Error indicator
+    }
+    else{
+        for(int i{1}; i <= num; i++){
+            factorial *= i;
+        }
+    }
+    
+    std::cout << factorial; // Moved before return
+    return factorial;
+}
+
+int main(){
+    int result = calculateFactorial(12);
+    // Or simply: calculateFactorial(5);
+    return 0;
+}
+--- ./Fizzbuzz.cpp ---
+
+#include<iostream>
+#include<vector>
+#include<string_view>
+void fizzbuzz(int x){
+    std::vector<int> div{3,5,7,11,13,17,19};
+    std::vector<std::string_view> answer{"fizz","buzz","pop","bang","jazz","pow","boom"};
+    for(int i{1}; i<= x; i++){
+        bool printed{false};
+        if( i % div[0] == 0){
+            std::cout<<answer[0];
+            printed = true;
+        }
+        if( i % div[1] == 0){
+            std::cout<<answer[1];
+            printed = true;
+        }
+        if( i % div[2] == 0){
+            std::cout<<answer[2];
+            printed = true;
+        }
+        if(i % div[3] == 0){
+            std::cout<<answer[3];
+            printed = true;
+        }
+        if(i % div[4] == 0){
+            std::cout<<answer[4];
+            printed = true;
+        }
+        if(i % div[5] == 0){
+            std::cout<<answer[5];
+            printed = true;
+        }
+        if(i % div[6] == 0){
+            std::cout<<answer[6];
+            printed = true;
+        }
+        if(!printed){
+            std::cout<<i;
+        }
+
+        std::cout<<"\n";
+    }
+}
+
+int main(){
+    fizzbuzz(150);
+    return 0;
+}
+--- ./forloops1.cpp ---
+
+#include<iostream>
+
+int sumTo(int x){
+    int sum{0};
+    for(int i=1; i <= x; i++){
+        sum += i;
+        std::cout<<i;
+        if(i < x){
+            std::cout<<" + ";
+        }
+    }
+    return sum;
+}
+
+int main(){
+    std::cout<<"Enter a number to sum to: ";
+    int y{};
+    std::cin>>y;
+    int x{sumTo(y)};
+    std::cout<<" = "<<x;
+}
+--- ./fractionClass.cpp ---
+
+#include <iostream>
+
+class Fractions{
+    int numerator{};
+    int denominator{};
+
+    public:
+        explicit Fractions(int m_numerator = 0, int m_denominator = 1)
+        : numerator{m_numerator}
+        , denominator{m_denominator}
+        {
+
+        }
+
+        void getFractions(){
+            std::cout<<"Enter a value for numerator: ";
+            std::cin>>numerator;
+            std::cout<<"Enter a value for denominator: ";
+            std::cin>>denominator;
+        }
+
+        Fractions multiply(const Fractions& f) const {
+            return Fractions{numerator * f.numerator, denominator * f.denominator}; 
+        }
+
+        void printFractions() const {
+            std::cout << numerator << '/' << denominator << '\n';
+        }
+};
+
+
+
+int main(){
+    Fractions f1{};
+    f1.getFractions();
+    Fractions f2{};
+    f2.getFractions();
+    std::cout<<"Your Fractions are: ";
+    f1.multiply(f2).printFractions();
+}
+--- ./Ftemplate1.cpp ---
+
+#include <iostream>
+
+template <typename N, typename T>
+T add(T x, N y){
+    return x+y;
+}
+int main()
+{
+	std::cout << add(2, 3) << '\n';
+	std::cout << add(1.2, 3.4) << '\n';
+
+	return 0;
+}
+--- ./Ftemplate2.cpp ---
+
+#include<iostream>
+ 
+template <typename Y>
+Y mult(Y x, int y){
+    return x*y;
+}
+
+int main()
+{
+	std::cout << mult(2, 3) << '\n';
+	std::cout << mult(1.2, 3) << '\n';
+
+	return 0;
+}
+--- ./Ftemplate3.cpp ---
+
+#include<iostream>
+
+template <typename T, typename Q>
+auto sub(T x, Q y){
+    return x - y;
+}
+
+int main()
+{
+	std::cout << sub(3, 2) << '\n';
+	std::cout << sub(3.5, 2) << '\n';
+	std::cout << sub(4, 1.5) << '\n';
+
+	return 0;
+}
+--- ./HelloFirstTest.cpp ---
+
+#include<iostream>
+int main(){
+    std::cout<<"Enter an integer: ";
+    int num{};
+    std::cin>>num;
+    std::cout<<"Double your number: "<<num*2<<std::endl;
+    std::cout<<"Triple your number: "<<num*3<<std::endl;
+    return 0;
+}   
+--- ./HelloSecondTest.cpp ---
+
+#include<iostream>
+int main(){
+    std::cout<<"Enter a integer: ";
+    int x{}, y{};
+    std::cin>>x;
+    std::cout<<"Enter a second integer: ";
+    std::cin>>y;
+    std::cout<<x<<" + "<<y<<" is : "<<x+y<<".\n";
+    std::cout<<x<<" - "<<y<<" is : "<<x-y<<".\n";
+    return 0;
+}
+--- ./Hello_Boolean.cpp ---
+
+#include<iostream>
+
+bool prime(int x){
+    if(x==2 || x == 3 || x == 5 || x == 7){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+int main(){
+    std::cout<<"Enter a number from 0 to 9 : ";
+    int x{};
+    std::cin>>x;
+    if(prime(x)){
+        std::cout<<"the number is a prime number";
+    }
+    else{
+        std::cout<<"the number is not a prime number";
+    }
+}
+--- ./Hello_Calc.cpp ---
+
+#include<iostream>
+#include<io.h>
+
+int readNumber();
+void writeAnswer(int x);
+
+int main(){
+    int x{readNumber()};
+    int y{readNumber()};
+    writeAnswer(x+y);
+    return 0;
+}
+--- ./Hello_Char.cpp ---
+
+#include<iostream>
+
+int main(){
+    char x{};
+    std::cout<<"Enter a single character: ";
+    std::cin>>x;
+    std::cout<<"You've entered "<<x<<" Which is ASCII code for "<<static_cast<int>(x);
+}
+--- ./Hello_cin.cpp ---
+
+#include<iostream>
+int main(){
+   std::cout<<"Enter three numbers :\n";
+   int x{}, y{}, z{};
+   std::cin>>x;
+   std::cin>>y;
+   std::cin>>z;
+   std::cout<<"You entered the numbers "<<x<<" "<<y<<" and "<<z;
+}
+--- ./Hello_Data.cpp ---
+
+#include<iostream>
+
+int main(){
+    std::cout<<5;
+    std::cout<<10;
+    std::cout<<"H";
+    int x;              //This is a variable of x defined as an interger(int); 
+    x = 10;             //Assigning the x integer to 10
+    std::cout<<" X is equal to "<<x;
+    return 0;
+}
+--- ./Hello_functDeclaration.cpp ---
+
+#include<iostream>
+
+int minus(int x, int y);
+
+int main(){
+    std::cout<<"x - y = "<<minus(5,6);
+}
+
+int minus(int x, int y){
+    return x - y;
+}
+--- ./Hello_Functions.cpp ---
+
+#include<iostream>
+
+int returnNUM(){
+    return 5;
+}
+int takeInput(){
+    std::cout<<"Enter a number: "<<std::endl;
+    int x;
+    std::cin>>x;
+    std::cout<<"This is the number you've inputted: "<<x<<std::endl;
+    return x;
+}
+int main(){
+    int takeValue{takeInput()};
+    int returnValue{returnNUM()};
+    std::cout<<"This is your number times 2: "<<takeValue*2<<std::endl;
+    std::cout<<"This is your number times 5: "<<takeValue*returnValue<<std::endl;
+}
+--- ./Hello_FunctPara.cpp ---
+
+#include<iostream>
+int returnNum(){
+    std::cout<<"Enter a integer: ";
+    int x{};
+    std::cin>>x;
+    return x;
+}
+
+int doubleNumber(int x){
+    return x*2;
+}
+
+int main(){
+    returnNum;
+    std::cout<<doubleNumber(returnNum());
+}
+--- ./Hello_IF.cpp ---
+
+#include<iostream>
+
+int choice(){
+    std::cout<<"Enter a number from 0 to 9: ";
+    int x{};
+    std::cin>>x;
+    return x;
+} 
+
+int main(){
+    int x{choice()};
+    if(x == 0){
+        std::cout<<"Your number is not a prime number";
+    }
+    else if(x == 1 || x == 4 || x == 7){
+        std::cout<<"Your number is not a prime number";
+    }
+    else{
+        std::cout<<"Your number is a prime number";
+    }
+}
+--- ./Hello_loopsGravity.cpp ---
+
+#include <iostream>
+
+namespace Constant{
+    constexpr double gravity{9.8};
+}
+// Gets tower height from user and returns it
+double getTowerHeight()
+{
+	std::cout << "Enter the height of the tower in meters: ";
+	double towerHeight{};
+	std::cin >> towerHeight;
+	return towerHeight;
+}
+
+// Returns the current ball height after "seconds" seconds
+double calculateBallHeight(double towerHeight, int seconds)
+{
+	// Using formula: s = (u * t) + (a * t^2) / 2
+	// here u (initial velocity) = 0, so (u * t) = 0
+	const double fallDistance { Constant::gravity * (seconds * seconds) / 2.0 };
+	const double ballHeight { towerHeight - fallDistance };
+
+	// If the ball would be under the ground, place it on the ground
+	if (ballHeight < 0.0)
+		return 0.0;
+
+	return ballHeight;
+}
+
+// Prints ball height above ground
+void printBallHeight(double ballHeight, int seconds)
+{
+	if (ballHeight > 0.0)
+		std::cout << "At " << seconds << " seconds, the ball is at height: " << ballHeight << " meters\n";
+	else
+		std::cout << "At " << seconds << " seconds, the ball is on the ground.\n";
+}
+
+// Calculates the current ball height and then prints it
+// This is a helper function to make it easier to do this
+double calculateAndPrintBallHeight(double towerHeight, int seconds)
+{
+	const double ballHeight{ calculateBallHeight(towerHeight, seconds) };
+	printBallHeight(ballHeight, seconds);
+
+    return ballHeight;
+}
+
+int main()
+{
+	const double towerHeight{ getTowerHeight() };
+    int seconds{0};
+    while(calculateAndPrintBallHeight(towerHeight, seconds) > 0.0){
+        seconds++;
+    }
+
+	return 0;
+}
+--- ./Hello_Marks.cpp ---
+
+#include<iostream>
+
+double getMarks(){
+    double a, b, c, d, e;
+    std::cout<<"Enter marks for Math: ";
+    std::cin>>a;
+    std::cout<<"Enter marks for Science: ";
+    std::cin>>b;
+    std::cout<<"Enter marks for English: ";
+    std::cin>>c;
+    std::cout<<"Enter marks for History: ";
+    std::cin>>d;
+    std::cout<<"Enter marks for Art: ";
+    std::cin>>e;
+
+    std::cout<<"Total Marks: "<<a+b+c+d+e<<"\n";
+    return a+b+c+d+e;
+};
+
+double sumPercentage(double x){
+    std::cout<<"Percentage Marks : "<<(x/500)*100<<"\n";
+    return (x/500)*100;
+}
+
+void percentageMark(double x){
+    if (x >= 90){
+        std::cout<<"Grade A";
+    }
+    else if(x >= 80){
+        std::cout<<"Grade B";
+    }
+    else if(x >= 70){
+        std::cout<<"Grade C";
+    }
+    else if(x >= 60){
+        std::cout<<"Grade D";
+    }
+    else if(x < 50){
+        std::cout<<"Grade F";
+    }
+}
+
+int main(){
+    double x{getMarks()};
+    double y{sumPercentage(x)};
+    percentageMark(y);
+}
+--- ./Hello_memory.cpp ---
+
+#include<iostream>
+
+int main(){
+    std::cout<<sizeof(int)<<"\n";
+}
+--- ./hello_primeforloops.cpp ---
+
+// Make sure that assert triggers even if we compile in release mode
+#undef NDEBUG
+#include <cassert> // for assert
+#include <iostream>
+
+
+bool isPrime(int x)
+{
+    if(x <= 1)
+        return false;
+    for( int i{2}; i < x; i++){
+        if(x % i == 0)
+            return false;
+    }
+    return true;
+    // write this function using a for loop
+}
+
+int main()
+{
+    assert(!isPrime(0)); // terminate program if isPrime(0) is true
+    assert(!isPrime(1));
+    assert(isPrime(2));  // terminate program if isPrime(2) is false
+    assert(isPrime(3));
+    assert(!isPrime(4));
+    assert(isPrime(5));
+    assert(isPrime(7));
+    assert(!isPrime(9));
+    assert(isPrime(11));
+    assert(isPrime(13));
+    assert(!isPrime(15));
+    assert(!isPrime(16));
+    assert(isPrime(17));
+    assert(isPrime(19));
+    assert(isPrime(97));
+    assert(!isPrime(99));
+    assert(isPrime(13417));
+
+    std::cout << "Success!\n";
+
+    return 0;
+}
+--- ./Hello_String.cpp ---
+
+#include<iostream>
+#include <string>
+
+int main(){
+    std::cout<<"Enter your name: ";
+    std::string name{};
+    std::getline(std::cin>>std::ws, name);
+    std::cout<<"Enter a your age: ";
+    int x{};
+    std::cin>>x;
+    int lent{static_cast<int>(name.length())};
+    std::cout<<"Your name"<<" + "<<"length of name is: "<<lent + x;
+    
+}
+--- ./Hello_Variable.cpp ---
+
+#include<iostream>
+
+int main(){
+    int width{5};       //Assigining value to the variable with one statement 
+    std::cout<<width;
+
+    width = 7;          //Change the value of the variable
+
+    std::cout<<width;   
+}
+--- ./Hello_World.cpp ---
+
+#include<iostream>                                      //this is one of C++ standard library;
+
+int main(){                                             //This is a main funtion
+    std::cout<<"Hello World!, I love you! "<<std::endl;
+    std::cout<<"Hello"<<" World\n";                        //this is a statement 
+    return 0;                                           //this is to tell the compiler that everything is okay!
+}
+
+--- ./Hi-lo.cpp ---
+
+#include<iostream>
+#include "Random.h"
+
+void ignoreLine(){
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+int main(){
+    bool playgame{true};
+    int numbers{Random::get(1,100)};
+    int answer{};
+    char choice{};
+    int tries{};
+    while(playgame){
+        bool won{false};
+        std::cout<<"How many tries do you want?";
+        std::cin>>tries;
+        for(int i = 1; i <= tries; i++){
+            std::cout<<"Guess a number between 1 and 100 #"<<i<<"\n";
+            std::cin>>answer;
+            if(answer > numbers)
+                std::cout<<"too high"<<"\n";
+            if(answer < numbers)
+                std::cout<<"too low"<<"\n";
+            if(answer == numbers){
+                std::cout<<"Correct! You win!";
+                won = true;
+                break;
+            }
+        }
+        if(!won){
+            std::cout<<"Sorry, you lose. The correct number was "<<numbers<<".\n";
+        }
+        std::cout<<"Would you like to play again (y/n)?";
+        std::cin>>choice;
+        if(choice == 'n'){
+            std::cout<<"Thank you for playing";
+            playgame = false;
+        }
+        else if(choice == 'y'){
+            playgame = true;
+        }
+    }
+}
+--- ./Hi-lo_v2.cpp ---
+
+#include<iostream>
+#include<limits>
+#include "Random.h"
+
+void ignoreLine(){
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+bool hiLO(int min, int max){
+    const int numbers{Random::get(min,max)};
+    int tries{};
+    int guesses{};
+    std::cout<<"How many tries?: ";
+    std::cin>>tries;
+    if (!std::cin){    
+        std::cin.clear(); 
+        ignoreLine();
+        std::cout<<"Invalid input\n";
+        return false;    
+    }
+    ignoreLine();
+    for(int i{1}; i <= tries;){
+        std::cout<<"Guess a number between 1 and 100 #"<<i<<"\n";
+        std::cin>>guesses;
+        if (!std::cin) {    
+            std::cin.clear(); 
+            ignoreLine();  
+            std::cout << "Invalid input! Please enter a number.\n";
+            continue;      
+        }
+        if(guesses <= 0 || guesses > 100){
+            std::cout<<"Only put number between 1 and 100 please\n";
+            continue;
+        }
+        if(guesses > numbers){
+            std::cout<<"Your guess is too high\n";
+        }
+        else if(guesses < numbers){
+            std::cout<<"Your guesses is too low\n";
+        }
+        else if(guesses == numbers){
+            std::cout<<"You guessed right!\n";
+            return true;
+        }
+        i++;
+    }
+    std::cout<<"Sorry you lose! the correct number was "<<numbers<<"\n";
+    return false;
+}
+
+bool playAgain(bool f){
+    char choice{};
+    do{
+        std::cout<<"Do you want to play again? (y/n)\n ";
+        std::cin>>choice;
+        if(choice == 'y' || choice == 'Y' ){
+            return true;
+        }
+        else if(choice == 'n' || choice == 'N'){
+            return false;
+        }
+        else{
+            std::cout<<"Invalid input\n";
+            continue;
+        }
+    }while(f == false);
+    return true;
+}
+
+
+int main(){
+    int min{};
+    int max{};
+    std::cout<<"Enter the range of the random numbers (min - max): ";
+    std::cin>>min>>max;
+    while(true){
+        bool replay{hiLO(min,max)};
+        if(!playAgain(replay)){
+            return false;
+        }
+    }
+}
+--- ./int_block.cpp ---
+
+#include<iostream>
+
+int main(){
+    std::cout<<"Enter an integer: ";
+    int smaller{};
+    std::cin>>smaller;
+    std::cout<<"Enter a larger integer: ";
+    int larger{};
+    std::cin>>larger;
+    {
+        int z{}; //z intialized here
+        if(smaller > larger){
+            std::cout<<"swapping the values\n";
+            z = larger; 
+            larger = smaller;
+            smaller = z;  //z dies here//
+        }
+    }
+
+    std::cout<<"The smaller value is: "<<smaller<<"\n";
+    std::cout<<"The larger value is: "<<larger;
+    return 0;
+
+}
+--- ./Inventory.cpp ---
+
+#include<iostream>
+
+double product(){
+    std::cout<<"=== Inventory Management System ==="<<"\n";
+    double p1{}, p2{}, p3{};
+    int q1{}, q2{}, q3{};
+
+    std::cout<<"Enter quantity for Product 1: ";
+    std::cin>>q1;
+    std::cout<<"Enter price for Product 1: ";
+    std::cin>>p1;
+    std::cout<<"Enter quantity for Product 2: ";
+    std::cin>>q2;
+    std::cout<<"Enter price for Product 2: ";
+    std::cin>>p2;
+    std::cout<<"Enter quantity for Product 3: ";
+    std::cin>>q3;
+    std::cout<<"Enter price for Product 3: ";
+    std::cin>>p3;
+
+    std::cout<<"=== Receipt ==="<<"\n";
+    std::cout<<"product 1: "<<p1*q1<<"\n";
+    std::cout<<"product 2: "<<p2*q2<<"\n";
+    std::cout<<"product 3: "<<p3*q3<<"\n";
+
+    return p1*q1+p2*q2+p3*q3;
+}
+
+void calcDiscount(double total){
+
+    std::cout<<"----------------"<<"\n";
+    std::cout<<"Subtotal : "<<total<<"\n";
+    double rate = 0.0;
+    if(total < 100){
+        std::cout<<"Discount : "<<"No discount"<<"\n";
+        
+    }
+    else if(total >= 100 && total <= 500){
+        rate = 0.05;
+        std::cout<<"Discount : "<<"%"<<rate<<"\n";
+    }
+    else if(total > 500){
+        rate = 0.1;
+        std::cout<<"Discount : "<<"%"<<rate<<"\n";
+    }
+
+    double discount{total * rate};
+    std::cout<<"Final Total: "<<total - discount;
+
+}
+
+int main(){
+    double total{product()};
+    calcDiscount(total);
+}
+--- ./io.cpp ---
+
+#include<iostream>
+#include<io.h>
+
+int readNumber(){
+    std::cout<<"Enter a number: ";
+    int x{};
+    std::cin>>x;
+    return x;
+}
+
+void writeAnswer(int x){
+    std::cout<<"The answer is: "<<x;
+}
+
+--- ./io.h ---
+
+#ifndef IO_H
+#define IO_H
+
+int readNumber();
+void writeAnswer(int x);
+
+#endif
+--- ./is!true.cpp ---
+
+#include <iostream>
+
+bool isEven(int x)
+{
+    return !(x % 2);
+}
+
+int main()
+{
+    std::cout << "Enter an integer: ";
+    int x{};
+    std::cin >> x;
+
+    if (isEven(x))
+        std::cout << x << " is even\n";
+    else
+        std::cout << x << " is odd\n";
+
+    return 0;
+}
+--- ./loops_ASCII.cpp ---
+
+#include<iostream>
+
+int main(){
+    char n{'a'};
+    while(n <= 'z'){
+        std::cout<<n<<" ASCII : "<<static_cast<int>(n)<<" "<<"\n";
+        n++;
+    }
+}
+--- ./Loops_reverse.cpp ---
+
+#include<iostream>
+
+int main(){
+    int outer{1};
+    while(outer <= 5){
+        int filler{4};
+        while(filler >= outer){
+            std::cout<<" "<<" ";
+            --filler;
+        }
+        int inner{1};
+        while(inner <= outer){
+            std::cout<<inner<<" ";
+            inner++;
+        }
+        std::cout<<"\n";
+        outer++;
+    }
+}
+--- ./MemberFunc.cpp ---
+
+#include <iostream>
+
+// Provide the definition for IntPair and the print() member function here
+struct IntPair{
+    int p1{};
+    int p2{};
+    void print(){
+        std::cout<<p1<<"\n"<<p2<<"\n";
+    }
+    bool isEqual(IntPair& p){
+        if(p1 == p.p1 && p2 == p.p2)
+            return true;
+        else
+            return false;
+    }
+};
+int main()
+{
+	IntPair p1 {1, 2};
+	IntPair p2 {3, 4};
+
+	std::cout << "p1: ";
+	p1.print();
+
+	std::cout << "p2: ";
+	p2.print();
+
+	std::cout << "p1 and p1 " << (p1.isEqual(p1) ? "are equal\n" : "are not equal\n");
+	std::cout << "p1 and p2 " << (p1.isEqual(p2) ? "are equal\n" : "are not equal\n");
+
+	return 0;
+}
+--- ./Negative_num.cpp ---
+
+#include <iostream>
+
+int main()
+{
+	std::cout << "Enter a positive number: ";
+	int num{};
+	std::cin >> num;
+    {
+        int x{};
+        if (num < 0)
+		std::cout << "Negative number entered.  Making positive.\n";
+		num = -num;
+    }
+
+    std::cout << "You entered: " << num;
+        
+	return 0;
+}
+--- ./Nestedtypes.cpp ---
+
+#include<iostream>
+class Student{
+    public:
+        enum Grade{
+            A,
+            B,
+            C,
+            None,
+        };
+
+    private:
+        std::string m_name;
+        double m_marks;
+        int m_id;
+        Grade m_grade;
+    
+    public:
+        Student(Grade grade = None, std::string_view name = "None", double marks = 0.0, int id = 000)
+        : m_grade{grade}
+        , m_name{name}
+        , m_marks{marks}
+        , m_id{id}
+        {
+        }
+
+        Grade getGrade() const {return m_grade;};
+        std::string_view getname() const {return m_name;};
+        double getMarks() const {return m_marks;};
+        int getID() const {return m_id;};
+
+        void setValues(){
+            std::cout<<"Enter your Name: \n";
+            std::cin>>m_name;
+            std::cout<<"Enter your ID: \n";
+            std::cin>>m_id;
+        }
+
+        Grade calcGrade(Student& s){
+            std::cout<<"Enter your total marks: ";
+            std::cin>>s.m_marks;
+            if(s.m_marks >= 50.0 && s.m_marks < 70.0){
+                std::cout<<"Grade: C\n";
+                return Grade::C;
+                
+            }
+            if(s.m_marks >= 70.0 && s.m_marks < 90.0){
+                std::cout<<"Grade: B\n";
+                return Grade::B;
+            }
+            if(s.m_marks >= 90.0){
+                std::cout<<"Grade: A\n";
+                return Grade::A;
+            }
+            return Grade::None;
+        }
+};
+
+void print(Student& s){
+    std::cout<<"Name: "<<s.getname()<<" "<<"ID: "<<s.getID()<<" "<<"\n";
+    s.calcGrade(s);
+}
+
+int main(){
+    Student s{};
+    s.setValues();
+    print(s);
+}
+
+--- ./OverloadedOperator.cpp ---
+
+#include<iostream>
+#include<string>
+#include<optional>
+#include<limits>
+#include<string_view>
+
+enum MonsterType{
+    orc,
+    goblin, 
+    ogre, 
+    troll,
+    skeleton,
+};
+
+constexpr std::string_view getMonsterName(MonsterType& monster){
+
+    switch(monster){
+        case orc:  return "Orc";
+        case goblin: return "Goblin"; 
+        case ogre: return "Ogre";              
+        case troll: return "Troll" ; 
+        case skeleton: return "Skeleton";
+        default: return "ERROR";
+    };
+}
+
+constexpr std::optional<MonsterType>getMonsterString(std::string_view sv){
+    if(sv == "orc" || sv == "Orc") return orc;
+    if(sv == "goblin" || sv == "Goblin") return goblin;
+    if(sv == "troll" || sv == "Troll") return troll;
+    if(sv == "skeleton" || sv == "Skeleton") return skeleton;
+
+    return {};
+}
+
+std::istream& operator>>(std::istream& in, MonsterType& monster){
+    std::string s{};
+    in >> s;
+    std::optional match{getMonsterString(s)};
+    
+    if(match){
+        monster = *match;
+        return in;
+    }
+    in.setstate(std::ios_base::failbit);
+    return in;
+    
+}
+
+std::ostream& operator<<(std::ostream& out, MonsterType monster)
+{
+    return out << getMonsterName(monster);  
+}
+
+
+int main() {
+    std::cout<<"Enter a monster: ";
+    MonsterType mon1{};
+    std::cin>>mon1;
+    
+    if(std::cin){
+        std::cout<<"Your monster is: "<< mon1;
+    }
+    else{
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
+        std::cout<<"Your monster was invalid";
+    }
+
+    return 0;
+}
+--- ./PointClass.cpp ---
+
+#include<iostream>
+#include<cmath>
+
+class Point2d{
+    double m_x{0.0};
+    double m_y{0.0};
+    public:
+        Point2d() = default;
+        Point2d(double m, double y)
+        :m_x{m}
+        ,m_y{y}
+        {
+        }
+
+        void print(){
+            std::cout<<"Point2d("<<m_x<<","<<m_y<<")\n";
+        }
+
+        double distanceTo(Point2d& y){
+            return std::sqrt((m_x - y.m_y) * (m_x - y.m_y) + (m_y - y.m_x) * (m_y - y.m_x));
+        }
+};
+
+int main(){
+    
+    Point2d first{};
+    Point2d second{ 3.0, 4.0 };
+
+    first.print();
+    second.print();
+
+    std::cout << "Distance between two points: " << first.distanceTo(second) << '\n';
+
+    return 0;
+}
+--- ./pointersandStructs.cpp ---
+
+#include<iostream>
+
+struct Point{
+    double x;
+    double y;
+};
+
+struct Triangle{
+    Point* a{};
+    Point* b{};
+    Point* c{};
+};
+
+int main(){
+    Point a{2.3,6.1};
+    Point b{5.5,7.5};
+    Point c{7.5,4.5};
+    
+    Triangle tri{&a, &b, &c};
+    Triangle* ptr{&tri};
+    
+    std::cout<<ptr->c->y<<"\n";
+    std::cout<<ptr->b->y<<"\n";
+    
+--- ./pointersum.cpp ---
+
+#include<iostream>
+
+void squared(int* f, int* g){
+    if(*f > *g){
+        std::cout<<"The first number is bigger";
+    }
+    else{
+        std::cout<<"The second number is larger";
+    }
+}
+
+int main(){
+    int x{};
+    int y{};
+    std::cout<<"Enter two numbers: ";
+    std::cin>>x>>y;
+    squared(&x, &y);
+}
+
+--- ./PoinVectClass/main.cpp ---
+
+#include "Vector3d.h"
+#include "Point3d.h"
+
+int main()
+{
+    Point3d p { 1.0, 2.0, 3.0 };
+    Vector3d v { 2.0, 2.0, -3.0 };
+
+    p.print();
+    p.moveByVector(v);
+    p.print();
+
+    return 0;
+}
+--- ./PoinVectClass/Point3d.cpp ---
+
+#include "Point3d.h";
+#include "Vector3d.h";
+#include<iostream>
+
+Point3d::Point3d(double x, double y, double z)
+:m_x{x}
+,m_y{y}
+,m_z{z}
+{
+
+}
+
+void Point3d:: print() const
+{
+	std::cout << "Point(" << m_x << ", " << m_y << ", " << m_z << ")\n";
+}
+
+void Point3d::moveByVector(const Vector3d& v){
+    m_x += v.m_x;
+    m_y += v.m_y;
+    m_z += v.m_z;
+}
+
+--- ./PoinVectClass/Point3d.h ---
+
+#ifndef POINT3D_H
+#define POINT3D_H
+class Vector3d;
+
+class Point3d{
+    private:
+        double m_x;
+        double m_y;
+        double m_z;
+    public:
+        Point3d(double x, double y, double z);
+        void print() const;
+        void moveByVector(const Vector3d& v);
+};
+
+#endif
+--- ./PoinVectClass/Vector3d.cpp ---
+
+#include "Point3d.h";
+#include "Vector3d.h";
+#include<iostream>
+
+
+Vector3d::Vector3d(double x, double y, double z)
+	: m_x{x}, m_y{y}, m_z{z}
+{
+}
+
+void Vector3d::print() const
+{
+	std::cout << "Vector(" << m_x << ", " << m_y << ", " << m_z << ")\n";
+}
+
+--- ./PoinVectClass/Vector3d.h ---
+
+#ifndef VECTOR3D_H
+#define VECTOR3D_H
+
+#include "Point3d.h"
+
+class Vector3d{
+    private:
+        double m_x{};
+        double m_y{};
+        double m_z{};
+    public:
+        Vector3d(double x, double y, double z);
+        void print() const;
+        friend void Point3d::moveByVector(const Vector3d& v);
+};
+
+#endif
+--- ./printString.h ---
+
+#include <string>
+void printString(const std::string &s)
+{
+    std::cout << s << '\n';
+}
+--- ./Random.h ---
+
+#ifndef RANDOM_MT_H
+#define RANDOM_MT_H
+
+#include <chrono>
+#include <random>
+
+namespace Random
+{
+	// Returns a seeded Mersenne Twister
+	// Note: we'd prefer to return a std::seed_seq (to initialize a std::mt19937), but std::seed can't be copied, so it can't be returned by value.
+	// Instead, we'll create a std::mt19937, seed it, and then return the std::mt19937 (which can be copied).
+	inline std::mt19937 generate()
+	{
+		std::random_device rd{};
+
+		// Create seed_seq with clock and 7 random numbers from std::random_device
+		std::seed_seq ss{
+			static_cast<std::seed_seq::result_type>(std::chrono::steady_clock::now().time_since_epoch().count()),
+				rd(), rd(), rd(), rd(), rd(), rd(), rd() };
+
+		return std::mt19937{ ss };
+	}
+
+	// Here's our global std::mt19937 object.
+	// The inline keyword means we only have one global instance for our whole program.
+	inline std::mt19937 mt{ generate() }; // generates a seeded std::mt19937 and copies it into our global object
+
+	// Generate a random int between [min, max] (inclusive)
+        // * also handles cases where the two arguments have different types but can be converted to int
+	inline int get(int min, int max)
+	{
+		return std::uniform_int_distribution{min, max}(mt);
+	}
+
+	// Generate a random value between [min, max] (inclusive)
+	// * min and max must have the same type
+	// * return value has same type as min and max
+	// * Supported types:
+	// *    short, int, long, long long
+	// *    unsigned short, unsigned int, unsigned long, or unsigned long long
+	// Sample call: Random::get(1L, 6L);             // returns long
+	// Sample call: Random::get(1u, 6u);             // returns unsigned int
+	template <typename T>
+	T get(T min, T max)
+	{
+		return std::uniform_int_distribution<T>{min, max}(mt);
+	}
+
+	template <typename R, typename S, typename T>
+	R get(S min, T max)
+	{
+		return get<R>(static_cast<R>(min), static_cast<R>(max));
+	}
+}
+
+#endif
+--- ./RefrenceTempObjects.cpp ---
+
+#include "printString.h"
+#include <iostream>
+#include <string>
+#include <string_view>
+
+int main()
+{
+    std::string_view sv { "Hello" };
+
+    // We want to print sv using the printString() function
+
+//    printString(sv); // compile error: a std::string_view won't implicitly convert to a std::string
+
+    printString( static_cast<std::string>(sv) ); // Case 1: static_cast returns a temporary std::string direct-initialized with sv
+    printString( std::string { sv } );           // Case 2: explicitly creates a temporary std::string list-initialized with sv
+    printString( std::string ( sv ) );           // Case 3: C-style cast returns temporary std::string direct-initialized with sv (avoid this one!)
+
+    return 0;
+}
+--- ./Remainder.cpp ---
+
+#include<iostream>
+
+int main(){
+    std::cout<<"Enter an integer : ";
+    int x{};
+    std::cin>>x;
+
+    std::cout<<"Enter another integer : ";
+    int y{};
+    std::cin>>y;
+
+    std::cout<<"The remainder is: "<<x % y<<"\n";
+    if((x % y) == 0){
+        std::cout<<x<<" The number is evenly divisible by "<<y<<"\n";
+    }else{
+        std::cout<<x<<" is not divisible by "<<y<<"\n";
+    }
+}   
+--- ./scopedNestedClassesMonsters.cpp ---
+
+#include<iostream>
+#include<string>
+#include<string_view>
+#include "Random.h"
+#include<random>
+
+class Monster{
+    public:
+        enum Type{
+            Dragon,
+            Goblin,
+            Ogre,
+            Orc,
+            Skeleton,
+            Troll,
+            Vampire,
+            Zombie,
+            maxMonsterTypes,
+        };
+    private:
+        Type m_type;
+        std::string m_name{"???"};
+        std::string m_roar{"???"};
+        int m_hitpoints{0};
+
+    public:
+    Monster(Type type, std::string name, std::string roar, int hitpoint)
+    : m_type{type}, m_name{name}, m_roar{roar}, m_hitpoints{hitpoint}
+    {
+    }
+
+    constexpr std::string_view getTypeString()const{
+        switch(m_type){
+            case Dragon : return "Dragon";
+            case Goblin : return "Goblin";
+            case Ogre   : return "Ogre";
+            case Orc    : return "Orc";
+            case Skeleton : return "Skeleton";
+            case Troll   : return "troll";
+            case Vampire : return "Vampire";
+            case Zombie  : return "Zombie";
+            default: return "none";
+        };
+    }
+
+   
+    std::string getName() {return m_name;};
+    std::string getRoar() const {return m_roar;};
+    int getHP() const {return m_hitpoints;};
+
+    void print(){
+        std::cout<<m_name<<" "<<"the "<<getTypeString()<<" has "<<m_hitpoints<< " hitpoints and says "<<m_roar<<"\n";
+    }
+
+};
+
+namespace MonsterGenerator{
+    std::string MonsterName(int i){
+        switch(i){
+            case 1 : return "Briggs";
+            case 2 : return "Manny";
+            case 3 : return "Vargas";
+            case 4 : return "Jimmy";
+            case 5 : return "Klein";
+            default : return "null";
+        }
+    }
+
+    std::string MonsterRoar(int i){
+        switch(i){
+            case 1 : return "*roar*";
+            case 2 : return "*screams*";
+            case 3 : return "*vibrates*";
+            case 4 : return "*rattles*";
+            case 5 : return "*shouts*";
+            default : return "*taunt*";
+        }
+    }
+
+    Monster::Type generateType(int i){
+        switch(i){
+            case 1 : return Monster::Dragon;
+            case 2 : return Monster::Goblin;
+            case 3 : return Monster::Ogre;
+            case 4 : return Monster::Orc;
+            case 5 : return Monster::Skeleton;
+            case 6 : return Monster::Troll;
+            case 7 : return Monster::Vampire;
+            case 8 : return Monster::Zombie;
+            default: return Monster::maxMonsterTypes;
+        }
+
+    }
+
+
+    Monster generate(){
+        return Monster{ generateType(Random::get(1,8)), MonsterName(Random::get(0,5)), MonsterRoar(Random::get(0,5)), Random::get(1,100)};
+    }
+
+}
+
+
+int main(){
+	Monster m{ MonsterGenerator::generate() };
+	m.print();
+    Monster p{MonsterGenerator::generate()};
+    p.print();
+
+
+	return 0;
+}
+--- ./staticClassRand.cpp ---
+
+#include <chrono>
+#include <random>
+#include <iostream>
+
+class Random
+{
+	static std::mt19937 generate()
+	{
+		std::random_device rd{};
+
+		// Create seed_seq with high-res clock and 7 random numbers from std::random_device
+		std::seed_seq ss{
+			static_cast<std::seed_seq::result_type>(std::chrono::steady_clock::now().time_since_epoch().count()),
+				rd(), rd(), rd(), rd(), rd(), rd(), rd() };
+
+		return std::mt19937{ ss };
+	}
+
+	static inline std::mt19937 mt{ generate() }; // generates a seeded std::mt19937 and copies it into our global object
+
+	// Generate a random int between [min, max] (inclusive)
+    public:
+	static int get(int min, int max)
+	{
+		return std::uniform_int_distribution{min, max}(mt);
+	}
+};
+
+int main()
+{
+	// Print a bunch of random numbers
+	for (int count{ 1 }; count <= 10; ++count)
+		std::cout << Random::get(1, 6) << '\t';
+
+	std::cout << '\n';
+
+	return 0;
+}
+--- ./static_sum.cpp ---
+
+#include <iostream>
+
+int accumulate(int x){
+    static int s_sum{};
+    s_sum+= x;
+    return s_sum;
+}
+
+int main()
+{
+    std::cout << accumulate(4) << '\n'; // prints 4
+    std::cout << accumulate(3) << '\n'; // prints 7
+    std::cout << accumulate(2) << '\n'; // prints 9
+    std::cout << accumulate(1) << '\n'; // prints 10
+
+    return 0;
+}
+--- ./structFraction.cpp ---
+
+#include<iostream>
+
+struct structFraction{
+    int numerator{};
+    int denominator{};
+};
+
+structFraction getFractions(){
+    structFraction f1{};
+    std::cout<<"Enter a value for the numerator: ";
+    std::cin>>f1.numerator;
+    std::cout<<"Enter a value for the denominator: ";
+    std::cin>>f1.denominator;
+    return f1;
+}
+
+constexpr structFraction getResultsMultiply( const structFraction& f1, const structFraction& f2){
+    return {f1.numerator * f2.numerator, f1.denominator * f2.denominator};
+}
+
+void printFractions(const structFraction& f){
+    std::cout<<"Your fractions multiplied together: "<<f.numerator<<"/"<<f.denominator;
+}
+
+int main(){
+    structFraction f1{getFractions()};
+    structFraction f2{getFractions()};
+    std::cout << "Your fractions multiplied together: ";
+    printFractions(getResultsMultiply(f1, f2));
+}
+--- ./StructMon.cpp ---
+
+#include<iostream>
+#include<string>
+#include<string_view>
+
+struct Monster{
+    enum MonsterType{
+        ogre,
+        dragon,
+        orc,
+        spider,
+        slime
+    };
+    MonsterType type;
+    std::string name{};
+    int health{};
+};
+
+constexpr std::string_view printMonsterType(Monster& m1){
+    switch(m1.type){
+        case Monster::ogre: return "ogre"; break;
+        case Monster::dragon: return "dragon"; break;
+        case Monster::orc: return "orc"; break;
+        case Monster::spider: return "giant spider"; break;
+        case Monster::slime: return "slime"; break;
+        default: return "unknown";
+    };
+}
+
+void printMonster(Monster& m1){
+   std::cout<<"This "<<printMonsterType(m1)<<" is named "<<m1.name<<" and has "<<m1.health<<" health\n";
+}
+
+
+
+int main(){
+    Monster m1{Monster::ogre, "Torg", 145};
+    Monster m2{Monster::slime, "Blurp", 23};
+    printMonster(m1);
+    printMonster(m2);
+
+}
+
+
+
+--- ./structsStudents.cpp ---
+
+#include<iostream>
+
+struct Student{
+    int id{};
+    int age{};
+    double marks{};
+};
+
+int main(){
+    Student s1{};
+    Student s2{};
+    std::cout<<"Enter id for student 1: "<<"\n";
+    std::cin>>s1.id;
+    std::cout<<"Enter age for student 1: "<<"\n";
+    std::cin>>s1.age;
+    std::cout<<"Enter overall marks for student 1: "<<"\n";
+    std::cin>>s1.marks;
+    std::cout<<"Enter id for student 2: "<<"\n";
+    std::cin>>s2.id;
+    std::cout<<"Enter age for student 2: "<<"\n";
+    std::cin>>s2.age;
+    std::cout<<"Enter overall marks for student 2: "<<"\n";
+    std::cin>>s2.marks;
+    std::cout<<"ID for student 1: "<<s1.id<<"\n";
+    std::cout<<"ID for student 2: "<<s2.id<<"\n";
+    std::cout<<"Age for student 1: "<<s1.age<<"\n";
+    std::cout<<"Age for student 2: "<<s2.age<<"\n";
+    std::cout<<"Marks for student 1: "<<s1.marks<<"\n";
+    std::cout<<"Marks for student 2: "<<s2.marks<<"\n";
+    
+}
+--- ./sum.cpp ---
+
+#include <iostream>
+
+int getnum(){
+    std::cout<<"Enter two number: ";
+    int x{};
+    int y{};
+    std::cin>>x>>y;
+    return x+y;
+}
+
+int main(){
+    int sum{getnum()};
+    std::cout<<sum;
+}
+--- ./swap.cpp ---
+
+#include<iostream>
+#include<algorithm>
+
+ void sort2(int& x, int& y){
+    if(x > y)
+        std::swap(x,y);
+}
+
+int main()
+{
+    int x { 7 };
+    int y { 5 };
+
+    std::cout << x << ' ' << y << '\n'; // should print 7 5
+
+    sort2(x, y); // make sure sort works when values need to be swapped
+    std::cout << x << ' ' << y << '\n'; // should print 5 7
+
+    sort2(x, y); // make sure sort works when values don't need to be swapped
+    std::cout << x << ' ' << y << '\n'; // should print 5 7
+
+    return 0;
+}
+--- ./Swicth_calc.cpp ---
+
+#include<iostream>
+
+int calculate(int x, int y, char z){
+
+    switch(z)
+    {
+        case '+':
+            return x + y;
+            break;
+        case '-':
+            return x - y;
+            break;
+        case '*':
+            return x * y;
+            break;
+        case '/':
+            return x / y;
+            break;
+        case '%':
+            return x % y;
+            break;
+        default:
+            std::cout<<"Error";
+            return 0;
+            break;
+    }
+}
+
+int main(){
+    int x{};
+    int y{};
+    char z{};
+
+    std::cout<<"Enter two integers: ";
+    std::cin>>x>>y;
+
+    std::cout<<"Enter an operation +,-,*,/,%: ";
+    std::cin>>z;
+
+    int f{calculate(x,y,z)};
+    std::cout<<"Results: "<<f<<"\n";
+
+    return 0;
+
+}
+--- ./tempCodeRunnerFile.cpp ---
+
+"
+--- ./template_factorial.cpp ---
+
+#include<iostream>
+
+template <auto N>
+constexpr int factorial(){
+    static_assert(N >= 0);
+    int product{1};
+    for(int i{2}; i<=N; i++){
+        product *= i;
+    }
+    return product;
+}
+
+
+int main()
+{
+    static_assert(factorial<0>() == 1);
+    static_assert(factorial<3>() == 6);
+    static_assert(factorial<5>() == 120);
+
+    static_assert(factorial<-3>()); // should fail to compile
+
+    return 0;
+}
+--- ./Test_age.cpp ---
+
+#include <iostream>
+#include <string>
+
+int main(){
+    std::cout<<"Enter name of person #1: ";
+    std::string name1{};
+    std::getline(std::cin>>std::ws, name1);
+    std::cout<<"Enter the age of the person: ";
+    int age1{};
+    std::cin>>age1;
+    std::cout<<"Enter name of person #2: ";
+    std::string name2{};
+    std::getline(std::cin>>std::ws, name2);
+    std::cout<<"Enter the age of the person: ";
+    int age2{};
+    std::cin>>age2;
+
+    if(age1 > age2){
+        std::cout<<name1<<"( age "<<age1<<" ) "<<"is older than "<<name2<<"( age "<<age2<<" ) ";
+    }else{
+        std::cout<<name2<<"( age "<<age2<<" ) "<<"is older than "<<name1<<"( age "<<age1<<" ) ";
+    }
+}   
+--- ./Test_Strings.cpp ---
+
+#include <iostream>
+#include <string>
+
+int main()
+{
+    std::cout << "Enter your full name: ";
+    std::string name{};
+    std::getline(std::cin>>std::ws, name);
+
+    std::cout << "Enter your favorite color: ";
+    std::string color{};
+    std::cin >> color;
+
+    std::cout << "Your name is " << name << " and your favorite color is " << color << '\n';
+
+    return 0;
+}
+--- ./UncsopedEmun.cpp ---
+
+#include <iostream>
+#include<string>
+#include<optional>
+#include<string_view>
+
+enum MonsterType{
+    orc,
+    goblin, 
+    ogre, 
+    troll,
+    skeleton,
+};
+
+constexpr std::string_view getMonsterName(MonsterType& monster){
+
+    switch(monster){
+        case orc:  return "Orc";
+        case goblin: return "Goblin"; 
+        case ogre: return "Ogre";              
+        case troll: return "Troll" ; 
+        case skeleton: return "Skeleton";
+        default: return "ERROR";
+    };
+}
+
+constexpr std::optional<MonsterType>getMonsterString(std::string_view sv){
+    if(sv == "orc" || sv == "Orc") return orc;
+    if(sv == "goblin" || sv == "Goblin") return goblin;
+    if(sv == "troll" || sv == "Troll") return troll;
+    if(sv == "skeleton" || sv == "Skeleton") return skeleton;
+
+    return {};
+}
+
+
+int main() {
+    std::cout << "Enter a Monster: ";
+    std::string Monster{};
+    std::cin>>Monster;
+
+    std::optional<MonsterType> mon1{getMonsterString(Monster)}; 
+
+    if(!mon1){
+        std::cout<<"You've entered invalid Monster!\n";
+    }else{
+        std::cout<<"You've entered : "<<getMonsterName(*mon1);
+    }
+
+    return 0;
+}
+--- ./vectorClass.cpp ---
+
+#include <iostream>
+
+class Vector3d;
+
+class Point3d
+{
+private:
+	double m_x{};
+	double m_y{};
+	double m_z{};
+
+public:
+	Point3d(double x, double y, double z)
+		: m_x{x}, m_y{y}, m_z{z}
+	{ }
+
+	void print() const
+	{
+		std::cout << "Point(" << m_x << ", " << m_y << ", " << m_z << ")\n";
+	}
+
+    void moveByVector(const Vector3d& v);
+};
+
+
+class Vector3d
+{
+private:
+	double m_x{};
+	double m_y{};
+	double m_z{};
+
+public:
+	Vector3d(double x, double y, double z)
+		: m_x{x}, m_y{y}, m_z{z}
+	{
+	}
+
+	void print() const
+	{
+		std::cout << "Vector(" << m_x << ", " << m_y << ", " << m_z << ")\n";
+	}
+    friend void Point3d::moveByVector(const Vector3d& v);
+};
+
+void Point3d::moveByVector(const Vector3d& v)
+{
+	m_x += v.m_x;
+    m_y += v.m_y;
+    m_z += v.m_z;
+}
+
+
+int main()
+{
+	Point3d p { 1.0, 2.0, 3.0 };
+	Vector3d v { 2.0, 2.0, -3.0 };
+
+	p.print();
+	p.moveByVector(v);
+	p.print();
+
+	return 0;
+}
+--- ./while_5m.cpp ---
+
+#include<iostream>
+
+int main(){
+    int n{1};
+    while(n<=10){
+        std::cout<<"5 * "<<n<<" = "<<5*n<<"\n";
+        n++;
+    }
+
+}

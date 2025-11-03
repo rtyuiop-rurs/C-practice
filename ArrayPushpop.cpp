@@ -29,7 +29,6 @@ void popPrint(std::vector<int>& arr){
 int main(){
     std::vector<int> arr{};
     printStack(arr);
-
     pushPrint(arr, 1);
     printStack(arr);
     pushPrint(arr, 2);
