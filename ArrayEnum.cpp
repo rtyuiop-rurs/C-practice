@@ -22,4 +22,5 @@ int main(){
     assert(std::size(legs) == Animals::animalcount);
     std::cout<<legs[Animals::elephant];
     std::cout<<legs[Animals::chicken];
+    std::cout<<legs[Animals::animalcount];
 }

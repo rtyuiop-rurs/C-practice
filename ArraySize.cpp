@@ -4,8 +4,8 @@
 
 template<typename T>
 T findMax(const std::vector<T>& data){
-    T max{data[0]};
     std::size_t length{data.size()};
+    T max{data[0]};
      if (length == 0){
         return T{};
     }
@@ -24,9 +24,6 @@ int main()
 
     std::vector data2 { -13.0, -26.7, -105.5, -14.8 };
     std::cout << findMax(data2) << '\n';
-
-    std::vector<int> data3 { };
-    std::cout << findMax(data3) << '\n';
 
     return 0;
 }
