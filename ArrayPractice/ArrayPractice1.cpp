@@ -12,7 +12,7 @@ namespace Inventory{
 };
 
 template <typename T>
-constexpr ::size_t returnIdex(T type){
+constexpr std::size_t returnIdex(T type){
     return static_cast<std::size_t>(type);
 }
 
