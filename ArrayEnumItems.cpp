@@ -3,7 +3,7 @@
 #include<cassert>
 
 namespace Player{
-    enum items : int{
+    enum items{
         health_potion,
         torches,
         arrows,
@@ -39,11 +39,11 @@ template <typename T>
 constexpr std::size_t converter(T value){
     static_assert(std::is_integral<T>() || std::is_enum<T>());
 
-    return static_cast<std::size_t>(value);
+    return static_cast<std::size_t>(value); //convert enum index into array index;
 }
 
 void printInventory(const std::vector<int>& inventory, Player::items i){
-    bool plural{inventory[converter(i)] != 1};
+    bool plural{inventory[converter(i)] != 1}; 
     std::cout<<"You have: "<<inventory[converter(i)];
     std::cout<<(plural ?  returnItemP(i) : returnItemS(i))<<"\n";
 }
