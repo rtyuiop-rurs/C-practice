@@ -43,7 +43,11 @@ std::string_view isSingular(Inventory::item& i){
 void printInventory(std::vector<int>& arr, Inventory::item i){
     bool plural{arr[returnIdex(i)] != 1};
     std::cout<<"You have "<<arr[returnIdex(i)];
-    std::cout<<(plural ? isPlural(i) : isSingular(i));
+    if(plural){
+        std::cout<<isPlural(i);
+    }else{
+        std::cout<<isSingular(i);
+    }
 }
 
 void printAuto(std::vector<int>& arr){
