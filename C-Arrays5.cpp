@@ -26,7 +26,7 @@ namespace Animal{
     static_assert(std::size(animalstring) == animalCount);
 
     constexpr std::array <Animal::Data, animalCount> AnimalData{{
-        {"chicken"sv, 2, "cuckoo"sv},
+        {animalstring[0], 2, "cuckoo"sv},
         {"dog"sv, 4, "woof"sv},
         {"elephant"sv, 4, "pawoo"sv},
         {"cat"sv, 4, "meow"sv},
@@ -88,7 +88,9 @@ int main(){
 
     std::cout<<"Here is the data for the rest of the animals: \n";
     for(auto e : Animal::animalEnum){
-        std::cout<<e<<"\n";
+        int i;
+        i++;
+        std::cout<<i<<". "<<e<<"\n";
     }
         
 }
