@@ -5,14 +5,11 @@ void ignoreLine(){
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-void drawUI(){
-    std::cout<<"WELCOME TO ROCK PAPER SCISSOR!\n";
+int getInput(){
     std::cout<<"1.ROCK\n";
     std::cout<<"2.SCISSOR\n";
     std::cout<<"3.PAPER\n";
-}
-
-int getInput(){
+    std::cout<<"===========================\n";
     while(true){
         int choice{0};
         std::cout<<"Enter Your Choice!!:";
@@ -56,27 +53,42 @@ int getRandomAnswer(){
     return comp;
 }
 
-void GameLogic(int choice, int randChoice){
+void GameLogic(int choice, int randChoice, int& lives, int& f_lives){
     if(choice == randChoice){
         std::cout<<"ITS A DRAW!!\n";
+        std::cout<<"===========================\n";
+        std::cout<<"My lives: "<<f_lives<<"\n";
+        std::cout<<"Your lives: "<<lives<<"\n";
     }
    else if(randChoice == 2 && choice == 1 || randChoice == 1 && choice == 3 || randChoice == 3 && choice == 2){
         std::cout<<"I LOST!!\n";
+        f_lives--;
+        std::cout<<"===========================\n";
+        std::cout<<"My lives: "<<f_lives<<"\n";
     }
     else if(choice == 2 && randChoice == 1 || choice == 1 && randChoice == 3 || choice == 3 && randChoice == 2){
         std::cout<<"YOU LOST!!\n";
+        lives--;
+        std::cout<<"===========================\n";
+        std::cout<<"Your lives: "<<lives<<"\n";
     }
 }
 
 
 int main(){
-    int choice{1};
-    do{
-        drawUI();
+    std::cout<<"WELCOME TO ROCK PAPER SCISSOR!\n";
+    int lives{6};
+    int f_lives{6};
+    while(true){
         int player{getInput()};
         int rand{getRandomAnswer()};
-        GameLogic(player,rand);
-        std::cout<<"Enter 0 to exit or any number to play again: ";
-        std::cin>>choice;
-    }while(choice != 0);
+        GameLogic(player,rand,lives,f_lives);
+        if(lives == 0){
+            std::cout<<"Well looks like you lost, :)\n";
+            break;
+        }
+        if(f_lives == 0){
+            std::cout<<"No way...."<<":(\n";
+        }
+    }
 }
