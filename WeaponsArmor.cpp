@@ -178,6 +178,8 @@ Weapon::weapon buyWeapons(Customer& p){
     }
 }
 
+
+
 void armorShop(Customer& p){
     while(true){
         std::cout<<"Here is the armor sets for today: \n";
@@ -195,11 +197,11 @@ void armorShop(Customer& p){
     }
 }
 
-void WeaponShop(Customer& p){
+void weaponShop(Customer& p){
     while(true){
         std::cout<<"Here is the weapons for today: \n";
         for(auto e : Weapon::weapon_enum){
-            std::cout<<e<<") "<<Weapon::weapon_string[e]<<" weapon costs: "<<Weapon::weapon_cost[e]<<"\n";
+            std::cout<<e<<") "<<Weapon::weapon_string[e]<<" Weapons costs: "<<Weapon::weapon_cost[e]<<"\n";
         }
         Weapon::weapon choice{buyWeapons(p)};
         if(choice == Weapon::weapon_count){
@@ -207,7 +209,7 @@ void WeaponShop(Customer& p){
         }
         bool success{p.buyW(choice)};
         if(success){
-            std::cout<<"You bought "<<Weapon::weapon_string[choice]<<" and you have : "<<p.getGold()<<" left\n";
+            std::cout<<"You bought "<<Weapon::weapon_string[choice]<<" and you have: "<<p.getGold()<<" left\n";
         }
     }
 }
@@ -268,7 +270,7 @@ int main(){
             armorShop(p);
         }
         else if(choice == 2){
-            WeaponShop(p);
+            weaponShop(p);
         }
         else if(choice == 3){
             break;
