@@ -89,7 +89,10 @@ class Deck{
 
 struct Player{
     int score{0};
+    int ace_counter{0};
 };
+
+
 
 namespace Settings{
     static constexpr int dealer_bust{17};
@@ -99,8 +102,18 @@ namespace Settings{
 bool dealer_turn(Deck& deck, Player& dealer){
     while(dealer.score < Settings::dealer_bust){
         Card card{deck.dealCard()};
-        dealer.score += card.returnVal();
+        int card_value = card.returnVal();
+        dealer.score += card_value;
         std::cout<<"The dealer flips a "<<card<<" They now have: "<<dealer.score<<"\n";
+        if(card_value == 11){
+            std::cout<<"The dealer hits a ACE\n";
+            dealer.ace_counter++;
+        }
+    }
+    while(dealer.score > Settings::player_bust && dealer.ace_counter > 0){
+        dealer.score -= 10;
+        std::cout<<"Dealer score is: "<<dealer.score<<"\n";
+        dealer.ace_counter--;
     }
     if(dealer.score > Settings::dealer_bust){
         std::cout<<"Dealer went bust!\n";
@@ -118,9 +131,20 @@ bool player_turn(Deck& deck, Player& player){
        std::cout<<"=============================\n";
        if(c == 'h'){
             Card card{deck.dealCard()};
-            player.score += card.returnVal();
+            int card_val = card.returnVal();
+            player.score += card_val;
             std::cout<<"You flips a "<<card<<" You now have: "<<player.score<<"\n";
+            if(card_val == 11){
+                std::cout<<"You hits an ACE!\n";
+                player.ace_counter++;
+            }
         }
+        while(player.score > Settings::player_bust && player.ace_counter > 0){
+            player.score -= 10;
+            std::cout<<"Your score is: "<<player.ace_counter<<"\n";
+            player.ace_counter--;
+        }
+
         if(c == 's'){
             return false;
         }
@@ -128,10 +152,13 @@ bool player_turn(Deck& deck, Player& player){
     if(player.score > Settings::player_bust){
         return true;
     }
+    if(player.ace_counter > 0){
+        player.score - 10;
+    }
     return false;
 }
 
-bool BlackJack(){
+bool BlackJack(int& drawline){
     Deck deck{};
     deck.shuffle();
     Player dealer{deck.dealCard().returnVal()};
@@ -148,21 +175,30 @@ bool BlackJack(){
     if(player.score > dealer.score){
         return true;
     }
+    if(player.score == dealer.score){
+        drawline++;
+    }
     return false;
 }
 
-int main()
-{
+
+int main(){
+    int draw{0};
     char choice{'?'};
     while(true){
-        if(BlackJack()){
+        if(BlackJack(draw)){
             std::cout<<"You win!\n";
         }
         else{
             std::cout<<"You lost!\n";
         }
+        if(draw > 0){
+            std::cout<<"Its a draw!\n";
+        }
+        std::cout<<"=====================================================\n";
         std::cout<<"Enter letter 'q' to quit and any letter to continue: ";
         std::cin>>choice;
+        std::cout<<"=====================================================\n";
         if(choice == 'q'){
             break;
         }
