@@ -27,6 +27,8 @@ int factorial(int x){
     return x + factorial(x - 1);
 }
 
+
+
 using ArithmeticFunction = std::function <int(int)>;
 
 ArithmeticFunction getFunction(int x){
