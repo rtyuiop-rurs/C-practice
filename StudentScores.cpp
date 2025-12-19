@@ -31,6 +31,7 @@ bool compareDescending(const Student& a, const Student& b){
     return a.scorepoints < b.scorepoints;
 }
 
+
 using getComparison = std::function<bool(Student,Student)>;
 
 getComparison comparison(char choice){
