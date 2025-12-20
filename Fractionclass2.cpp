@@ -19,6 +19,14 @@ class Fraction{
         friend Fraction operator*(int value, Fraction& a);
         friend std::ostream& operator<<(std::ostream& out, const Fraction& a);
         friend std::istream& operator>>(std::istream& in, Fraction& a);
+        
+        friend bool operator== (const Fraction& c1, const Fraction& c2);
+        friend bool operator!= (const Fraction& c1, const Fraction& c2);
+        friend bool operator< (const Fraction& c1, const Fraction& c2); 
+        friend bool operator> (const Fraction& c1, const Fraction& c2);
+        friend bool operator<= (const Fraction& c1, const Fraction& c2);        
+        friend bool operator>= (const Fraction& c1, const Fraction& c2);
+
 
         void reduce(){
             int gcd{std::gcd(m_nominator,m_denominator)};
@@ -67,17 +75,46 @@ std::istream& operator>>(std::istream& in, Fraction& a){
     return in;
 }
 
+bool operator== (const Fraction& c1, const Fraction& c2){
+    return(
+        c1.m_nominator == c2.m_nominator &&
+        c1.m_denominator == c2.m_denominator
+    );
+};
+
+bool operator!= (const Fraction& c1, const Fraction& c2){
+    return !operator==(c1,c2);
+};
+
+bool operator< (const Fraction& c1, const Fraction& c2){
+    return(
+        c1.m_nominator * c2.m_nominator <
+        c1.m_denominator * c2.m_denominator
+    );
+};
+
+bool operator> (const Fraction& c1, const Fraction& c2){
+    return operator<(c1,c2);
+};
+
+bool operator<= (const Fraction& c1, const Fraction& c2){
+    return !(operator>(c1,c2));
+};        
+
+bool operator>= (const Fraction& c1, const Fraction& c2){
+    return !(operator<(c1,c2));
+};
+
 int main()
 {
-	Fraction f1{};
-	std::cout << "Enter fraction 1: ";
-	std::cin >> f1;
+	Fraction f1{ 3, 2 };
+	Fraction f2{ 5, 8 };
 
-	Fraction f2{};
-	std::cout << "Enter fraction 2: ";
-	std::cin >> f2;
-
-	std::cout << f1 << " * " << f2 << " is " << f1 * f2 << '\n'; // note: The result of f1 * f2 is an r-value
-
+	std::cout << f1 << ((f1 == f2) ? " == " : " not == ") << f2 << '\n';
+	std::cout << f1 << ((f1 != f2) ? " != " : " not != ") << f2 << '\n';
+	std::cout << f1 << ((f1 < f2) ? " < " : " not < ") << f2 << '\n';
+	std::cout << f1 << ((f1 > f2) ? " > " : " not > ") << f2 << '\n';
+	std::cout << f1 << ((f1 <= f2) ? " <= " : " not <= ") << f2 << '\n';
+	std::cout << f1 << ((f1 >= f2) ? " >= " : " not >= ") << f2 << '\n';
 	return 0;
 }
