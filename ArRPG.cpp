@@ -122,8 +122,9 @@ void battle(std::vector<Enemy>& MonsterPool, Enemy& player) {
     std::cout << "You encounter: " << enemy.getName() << "\n";
     std::cout << enemy;
 
-    int round{1};  // Changed from "room" to "round" for clarity
+    int round{1};  
     bool player_turn{true};
+    bool bide{false};
 
     while(player.getHealth() > 0 && enemy.getHealth() > 0) {
         std::cout << "\n--- Round " << round << " ---\n";  // Fixed room display
@@ -135,6 +136,7 @@ void battle(std::vector<Enemy>& MonsterPool, Enemy& player) {
             std::cout << "1. Attack\n";
             std::cout << "2. Check status\n";
             std::cout << "3. Flee\n";
+            std::cout << "4. Bide <skip a turn to get a attack boost>\n";
             std::cout << "Choice: ";
 
             int choice{0};
@@ -152,6 +154,12 @@ void battle(std::vector<Enemy>& MonsterPool, Enemy& player) {
                         std::cout << "New attack: " << player.getAttack() << "\n";
                         return;  // End battle function
                     }
+                    // Cancels out bide attack boost
+                    if(bide){
+                        std::cout<<player.getName()<<" Bide has ended\n";
+                        player.setAttack(player.getAttack() - 0.70);
+                    }
+                     
                     // Only apply attack boost if attack was successful but didn't kill
                     player.setAttack(player.getAttack() + 0.020);
                     std::cout << "You gained an attack boost!\n";
@@ -178,6 +186,16 @@ void battle(std::vector<Enemy>& MonsterPool, Enemy& player) {
                         player.setHealth(player.getHealth() - damage);
                         std::cout << "You take " << damage << " damage!\n";
                     }
+                    break;
+                
+                case 4 :
+                    std::cout<<"You bide your attack!\n";
+                    std::cout << enemy.getName() << " gets a free attack!\n";
+                    player.setHealth(player.getHealth() - enemy.getAttack());
+                    std::cout << "You take " << enemy.getAttack() << " damage!\n";
+                    player.setAttack(player.getAttack() + 0.70);
+                    bide = true;
+                    std::cout<<player.getName()<<" attack increased temporarily to: "<<player.getAttack()<<"\n";
                     break;
                     
                 default: 
