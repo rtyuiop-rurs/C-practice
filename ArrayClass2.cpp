@@ -175,7 +175,7 @@ getComparison comparison(){
 }
 
 void getSearch(std::vector<StudentArray>& a){
-    std::cout<<"Enter the parameter for the search <N by name and G ny grade and D by ID> : ";
+    std::cout<<"Enter the parameter for the search <N by name and G my grade and D by ID> : ";
     char choice_search{'?'};
     std::cin>>choice_search;
     switch(choice_search){
@@ -203,7 +203,7 @@ int main(){
         std::cout<<"Welcome to Student database system!\n";
         std::cout<<"1. use + to add student details\n";
         std::cout<<"2. use - to delete student details\n";
-        std::cout<<"3. use S to search for student with name\n";
+        std::cout<<"3. use S to search for student details\n";
         std::cout<<"4. use P to list out all the student details\n";
         std::cout<<"5. use C to sort the student details\n";
         std::cout<<"6. use E to quit\n";
@@ -227,6 +227,9 @@ int main(){
         if(choice == 'E'){
             std::cout<<"Goodbye!";
             break;
+        }
+        else{
+            std::cout<<"Invalid input!";
         }
     }
 }
