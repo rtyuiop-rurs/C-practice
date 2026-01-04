@@ -19,8 +19,8 @@ class Enemy{
         void setAttack(double attack) {m_attack = attack;};
 
         std::string getName() const {return m_name;};
-        double getHealth()   {return m_health;};
-        double getAttack()  {return m_attack;};
+        double getHealth() const  {return m_health;};
+        double getAttack() const {return m_attack;};
 
         friend std::ostream& operator<<(std::ostream& out, const Enemy& a){
             out << a.m_name <<" \nHealth : "<< a.m_health <<" \nAttack : "<< a.m_attack<<"\n";
@@ -111,7 +111,8 @@ void playerStatus(Enemy& player){
     std::cout<<"===================";
 }
 
-void battle(std::vector<Enemy>& MonsterPool, Enemy& player) {
+void battle(std::vector<Enemy>& MonsterPool, Enemy& player){
+
     if(MonsterPool.empty()){
         std::cout << "There are no monsters left!\n";
         return;  // Need to return here
@@ -127,8 +128,8 @@ void battle(std::vector<Enemy>& MonsterPool, Enemy& player) {
     bool bide{false};
 
     while(player.getHealth() > 0 && enemy.getHealth() > 0) {
-        std::cout << "\n--- Round " << round << " ---\n";  // Fixed room display
-        
+        std::cout << "\n--- Round " << round << " ---\n"; 
+
         if(player_turn) {
             std::cout << "\n[YOUR TURN]\n";
             
@@ -154,6 +155,7 @@ void battle(std::vector<Enemy>& MonsterPool, Enemy& player) {
                         std::cout << "New attack: " << player.getAttack() << "\n";
                         return;  // End battle function
                     }
+                    
                     // Cancels out bide attack boost
                     if(bide){
                         std::cout<<player.getName()<<" Bide has ended\n";

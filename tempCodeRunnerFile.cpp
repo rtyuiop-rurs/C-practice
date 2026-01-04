@@ -1,1 +1,2 @@
- std::size_t mon{Random::get(1,10)};
+s defeated you! ***\n";
+            }
