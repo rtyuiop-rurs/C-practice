@@ -13,6 +13,7 @@ constexpr double Health_MAX{300.00};
 constexpr double bide_bonus{0.70};
 constexpr double Health_MIN_player{300.00};
 constexpr double Health_MAX_player{600.00};
+constexpr double LevelBonus{1.15};
 
 void ignoreLine(){
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -22,28 +23,40 @@ class Enemy{
     std::string m_name{"none"};
     double m_health{0.0};
     double m_attack{0.0};
+    double m_exp{0.0};
+    int m_level{0};
     public:
-        Enemy(std::string name = "none", double health = 0.0, double attack = 0.0)
-        : m_name{name}, m_health{health}, m_attack{attack}
+        Enemy(std::string name = "none", double health = 0.0, double attack = 0.0, double exp = 0.0, int level = 0)
+        : m_name{name}, m_health{health}, m_attack{attack}, m_exp{exp}, m_level{level}
         {}
 
         const std::string& getName() const {return m_name;};
         double getHealth() const {return m_health;};
         double getAttack() const {return m_attack;};
+        double getEXP() const {return m_exp;};
+        int getLevel() const {return m_level;};
 
         void setName(std::string name) {m_name = name;};
         void setHealth(double health) {m_health = std::max(0.0,health);};
         void setAttack(double attack) {m_attack = attack;};
+        void setEXP(double xp) {m_exp = xp;};
+        void setLevel(int level) {m_level = level;};
 
         friend std::ostream& operator <<(std::ostream& out, const Enemy& a){
-            out <<"\nName: "<< a.getName() <<" \nHealth Points: "<<a.getHealth()<<"\nAttack power: "<<a.getAttack()<<"\n";
+            out <<
+            "\nName: "<< a.getName() <<
+            "\nHealth Points: "<<a.getHealth()<<
+            "\nAttack power: "<<a.getAttack()<<
+            "\nLevel: "<<a.getLevel()<<"\n";
             return out;
         }
 
         bool operator==(const Enemy& b) const {
             return (this->m_name == b.m_name)&&
                    (this->m_health == b.m_health)&&
-                   (this->m_attack == b.m_attack);
+                   (this->m_attack == b.m_attack)&&
+                   (this->m_exp == b.m_exp)&&
+                   (this->m_level == b.m_level);
         }
 };
 
@@ -57,39 +70,100 @@ std::string genNames() {
     return names[Random::get<std::size_t>(0, names.size() - 1)];
 }
 
-void generateEnemyPool(std::vector<Enemy>& Monsters){
-    int index{Random::get(2,15)};
-    for(std::size_t i = 0; i < index; i++){
-        std::string names{genNames()};
-        double health{Random::get(Health_MIN,Health_MAX)};
-        double attack{Random::get(Attack_MIN,Attack_MAX)};
+int setLevel(Enemy& player){
+    if (player.getEXP() >= 2800) return 10;
+    if (player.getEXP() >= 2300) return 9;
+    if (player.getEXP() >= 1850) return 8;
+    if (player.getEXP() >= 1450) return 7;
+    if (player.getEXP() >= 1100) return 6;
+    if (player.getEXP() >= 800) return 5;
+    if (player.getEXP() >= 550) return 4;
+    if (player.getEXP() >= 350) return 3;
+    if (player.getEXP() >= 200) return 2;
+    if (player.getEXP() >= 100) return 1;
+    return 0;
+}
 
-        Monsters.emplace_back(names,health,attack);
+void updateLevel(Enemy& player){
+    int newLevel = setLevel(player);
+    if(newLevel > player.getLevel()){
+        for(int level = player.getLevel() + 1; level <= newLevel; level++){
+            player.setAttack(player.getAttack() * LevelBonus);
+            player.setHealth(player.getHealth() * LevelBonus);
+            std::cout << "Level " << level << " reached!\n";
+        }
+        player.setLevel(newLevel);
+        std::cout << "You are now level " << newLevel << "!\n";
+        std::cout << "Health: " << player.getHealth() << "\n";
+        std::cout << "Attack: " << player.getAttack() << "\n";
     }
 }
 
-std::size_t getOneEnemy(std::vector<Enemy>& Monsters){
-    std::size_t MonIndex{Random::get<std::size_t>(0, Monsters.size() - 1)};
-    return MonIndex;
+void setMonsterPool(std::vector<Enemy>& MonsterPool, int diff){
+    std::size_t index{Random::get<std::size_t>(1,15)};
+    
+    for(std::size_t i = 0; i < index; i++){
+        std::string getNames(genNames());
+        
+        // Determine monster level based on difficulty
+        int monsterLevel = 1;
+        switch(diff){
+            case 1: monsterLevel = Random::get(1, 3); break;
+            case 2: monsterLevel = Random::get(3, 7); break;
+            case 3: monsterLevel = Random::get(7, 10); break;
+        }
+        
+        // Base stats scaled by level
+        double baseHealth = Random::get(Health_MIN, Health_MAX);
+        double baseAttack = Random::get(Attack_MIN, Attack_MAX);
+        
+        double health = baseHealth * (1 + 0.2 * (monsterLevel - 1)); // 20% per level
+        double attack = baseAttack * (1 + 0.1 * (monsterLevel - 1)); // 10% per level
+        
+        // EXP scales with level
+        double EXP = 50 * monsterLevel * monsterLevel; // Quadratic scaling
+        
+        // Create monster with its level
+        Enemy monster(getNames, health, attack, EXP, monsterLevel);
+        MonsterPool.push_back(monster);
+    }
 }
 
-double dealDamage(const Enemy& attacker, Enemy& defender){
-    double damage = attacker.getAttack();
+std::size_t generateMOn(std::vector<Enemy>& MonsterPool){
+    std::size_t monIndex{Random::get<std::size_t>(0, MonsterPool.size() - 1)};
+    return monIndex;
+}
+
+void gainEXP(Enemy& player, Enemy& enemy){
+   double xp_gained = enemy.getEXP() * 0.5;
+   player.setEXP(player.getEXP() + xp_gained);
+   std::cout << "Gained " << xp_gained << " EXP!\n";
+   updateLevel(player);  // Check for level up immediately
+}
+
+double dealDamage(Enemy& attacker, Enemy& defender){
+    double attack = attacker.getAttack();
 
     if(defender.getHealth() > 0){
-        std::cout<<attacker.getName()<<" strikes at "<<defender.getName()<<" for "<< damage <<" damage\n";
-        defender.setHealth(defender.getHealth() - damage);
+        std::cout<<attacker.getName()<<" Strikes at "<<defender.getName()<<" for "<<attack<<" damage \n";
+        defender.setHealth(defender.getHealth() - attack);
     }
 
-    return damage;
+    return attack;
 }
 
 bool isDead(const Enemy& dead){
     return dead.getHealth() <= 0;
 }
 
-void deleteDead(std::vector<Enemy>& Monster, std::size_t index){
-    Monster.erase(Monster.begin() + index);
+void deleteDead(std::vector<Enemy>& MonsterPool, std::size_t index){
+    MonsterPool.erase(MonsterPool.begin() + index);
+}
+
+void AttackBoost(Enemy& player){
+    player.setAttack(player.getAttack() + 0.020);
+    std::cout <<player.getName()<< " gained an attack boost!\n";
+    std::cout << "New attack: " << player.getAttack() << "\n";
 }
 
 void printPlayerChoice(){
@@ -102,7 +176,6 @@ void printPlayerChoice(){
             std::cout << "Choice: ";
 }
 
-
 void playerStatus(Enemy& player){
    if(player.getHealth() > 0){
     std::cout<<"============";
@@ -111,60 +184,55 @@ void playerStatus(Enemy& player){
    }
 }
 
-void Battle(std::vector<Enemy>& MOnsterPool, Enemy& player){
-    if(MOnsterPool.empty()){
-        std::cout<<"The monster pool is empty\n";
-        return;
+void Battle(std::vector<Enemy>& MonsterPool, Enemy& player){
+    if(MonsterPool.empty()){
+        std::cout<<"The monsterpool is empty\n";
     }
 
-    std::size_t enemy_index{getOneEnemy(MOnsterPool)};
-    Enemy& enemy = MOnsterPool[enemy_index];
+
+    std::size_t MonIndex{generateMOn(MonsterPool)};
+    Enemy& enemy = MonsterPool[MonIndex];
     std::cout << "\n===== NEW BATTLE =====\n";
     std::cout << "You encounter: " << enemy.getName() << "\n";
-    const std::string enemyName = enemy.getName();
     std::cout << enemy;
 
     int round{1};
-    bool player_turn = true;
+    bool player_turn{true};
     bool bide{false};
 
-    while(player.getHealth() > 0 && !MOnsterPool.empty()){
+
+    while(player.getHealth() > 0 && !MonsterPool.empty()){
         if(player_turn){
             printPlayerChoice();
             int choice{0};
             std::cin>>choice;
+            ignoreLine();
             if(!std::cin){
                 std::cin.clear(); 
                 ignoreLine();  
                 std::cout << "Invalid input! Please enter a number.\n";
                 continue;
             }
-            std::cin.ignore();
             switch(choice){
                 case 1 :
                     if(bide){
-                        std::cout<<player.getName()<<" Releases a powerful attack!\n";
+                        std::cout<<player.getName()<<" Releases a powerful Attack!\n";
                     }
                     dealDamage(player,enemy);
                     if(isDead(enemy)){
-                        std::cout << "\n*** Victory! You defeated the enemy! ***\n";
-                        player.setAttack(player.getAttack() + 0.020);
-                        std::cout << "You gained an attack boost!\n";
-                        std::cout << "New attack: " << player.getAttack() << "\n";
-                        deleteDead(MOnsterPool,enemy_index);
-                        return;  // End battle function
+                        std::cout << "\n*** Victory! You defeated the enemy "<<enemy.getName()<<" ***\n";
+                        AttackBoost(player);
+                        gainEXP(player,enemy);
+                        deleteDead(MonsterPool,MonIndex);
+                        return;
                     }
                     if(bide){
                         std::cout<<player.getName()<<" Bide has ended\n";
                         player.setAttack(player.getAttack() - bide_bonus);
                         bide = false;
                     }
-                     
-                    // Only apply attack boost if attack was successful but didn't kill
-                    player.setAttack(player.getAttack() + 0.020);
-                    std::cout << "You gained an attack boost!\n";
                     break;
-                case 2 :
+                case 2:
                     player_turn = true;
                     playerStatus(player);
                     std::cout<<"\n";
@@ -209,7 +277,7 @@ void Battle(std::vector<Enemy>& MOnsterPool, Enemy& player){
 
         player_turn = !player_turn;
         if(isDead(enemy)){
-            deleteDead(MOnsterPool,enemy_index);
+            deleteDead(MonsterPool,MonIndex);
         }
 
         std::cout << "\n[Battle Status]\n";
@@ -222,17 +290,21 @@ void Battle(std::vector<Enemy>& MOnsterPool, Enemy& player){
         
         round++;
     }
-}   
+}
+
 
 int main(){
+    int diff{0};
+    std::cout<<"Enter your difficulty < 1 for easy, 2 for medium and 3 for Hard >: ";
+    std::cin>>diff;
     std::vector<Enemy> Monsterpool;
-    generateEnemyPool(Monsterpool);
+    setMonsterPool(Monsterpool,diff);
     std::string playerName;
     std::cout << "Enter your name: ";
-    std::getline(std::cin, playerName);
+    std::cin>>playerName;
     double getHealth{Random::get(Health_MIN_player,Health_MAX_player)};
     double getAttack{Random::get(Attack_MIN,Attack_MAX)};
-    Enemy player{playerName, getHealth, getAttack};
+    Enemy player{playerName, getHealth, getAttack,1};
 
     std::cout<<"\nWelome "<<playerName<<"\n";
     std::cout<<Monsterpool.size()<<" amount of Monsters in the area\n";
