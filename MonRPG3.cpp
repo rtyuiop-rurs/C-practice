@@ -10,7 +10,7 @@ constexpr double Attack_MIN{30.00};
 constexpr double Attack_MAX{80.00};
 constexpr double Health_MIN{50.0};
 constexpr double Health_MAX{300.00};
-constexpr double bide_bonus{0.70};
+constexpr double bide_bonus{1.70};
 constexpr double Health_MIN_player{300.00};
 constexpr double Health_MAX_player{600.00};
 constexpr double LevelBonus{1.15};
@@ -101,35 +101,32 @@ void updateLevel(Enemy& player){
 
 void setMonsterPool(std::vector<Enemy>& MonsterPool, int diff){
     std::size_t index{Random::get<std::size_t>(1,15)};
-    
     for(std::size_t i = 0; i < index; i++){
         std::string getNames(genNames());
-        
-        // Determine monster level based on difficulty
-        int monsterLevel = 1;
+        int Monster_level = 1;
         switch(diff){
-            case 1: monsterLevel = Random::get(1, 3); break;
-            case 2: monsterLevel = Random::get(3, 7); break;
-            case 3: monsterLevel = Random::get(7, 10); break;
+            case 1 :
+                Monster_level = Random::get(1,3);
+            case 2 :
+                Monster_level = Random::get(4,6);
+            case 3:
+                Monster_level = Random::get(7,10);
         }
-        
-        // Base stats scaled by level
-        double baseHealth = Random::get(Health_MIN, Health_MAX);
-        double baseAttack = Random::get(Attack_MIN, Attack_MAX);
-        
-        double health = baseHealth * (1 + 0.2 * (monsterLevel - 1)); // 20% per level
-        double attack = baseAttack * (1 + 0.1 * (monsterLevel - 1)); // 10% per level
-        
-        // EXP scales with level
-        double EXP = 50 * monsterLevel * monsterLevel; // Quadratic scaling
-        
-        // Create monster with its level
-        Enemy monster(getNames, health, attack, EXP, monsterLevel);
-        MonsterPool.push_back(monster);
+
+        double base_health{Random::get(Health_MIN,Health_MAX)};
+        double base_attack{Random::get(Attack_MIN,Attack_MAX)};
+
+        double health = base_health * (1 + 0.2 * (Monster_level - 1));
+        double attack = base_attack * (1+ 0.1  * (Monster_level - 1));
+        double EXP = 50 * Monster_level * Monster_level;
+
+        Enemy Monster{getNames,health,attack,EXP,Monster_level};
+        MonsterPool.push_back(Monster);
     }
 }
 
 std::size_t generateMOn(std::vector<Enemy>& MonsterPool){
+    assert(!MonsterPool.empty());
     std::size_t monIndex{Random::get<std::size_t>(0, MonsterPool.size() - 1)};
     return monIndex;
 }
