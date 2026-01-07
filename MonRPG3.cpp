@@ -10,10 +10,13 @@ constexpr double Attack_MIN{30.00};
 constexpr double Attack_MAX{80.00};
 constexpr double Health_MIN{50.0};
 constexpr double Health_MAX{300.00};
-constexpr double bide_bonus{1.70};
-constexpr double Health_MIN_player{300.00};
-constexpr double Health_MAX_player{600.00};
+constexpr double bide_bonus{10.00};
+constexpr double Health_MIN_player{600.00};
+constexpr double Health_MAX_player{1000.00};
 constexpr double LevelBonus{1.15};
+constexpr double Insult_bonus{0.50};
+constexpr double brace_reduction{1.15};
+constexpr double Attack_boost{0.05};
 
 void ignoreLine(){
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -100,17 +103,22 @@ void updateLevel(Enemy& player){
 }
 
 void setMonsterPool(std::vector<Enemy>& MonsterPool, int diff){
-    std::size_t index{Random::get<std::size_t>(1,15)};
+    std::size_t index{Random::get<std::size_t>(2,15)};
     for(std::size_t i = 0; i < index; i++){
         std::string getNames(genNames());
         int Monster_level = 1;
         switch(diff){
             case 1 :
                 Monster_level = Random::get(1,3);
+                break;
             case 2 :
                 Monster_level = Random::get(4,6);
+                break;
             case 3:
                 Monster_level = Random::get(7,10);
+                break;
+            default: 
+                Monster_level = 1;
         }
 
         double base_health{Random::get(Health_MIN,Health_MAX)};
@@ -128,6 +136,10 @@ void setMonsterPool(std::vector<Enemy>& MonsterPool, int diff){
 std::size_t generateMOn(std::vector<Enemy>& MonsterPool){
     assert(!MonsterPool.empty());
     std::size_t monIndex{Random::get<std::size_t>(0, MonsterPool.size() - 1)};
+    if(MonsterPool[monIndex].getName() == "Boss baby"){
+        MonsterPool[monIndex].setAttack(MonsterPool[monIndex].getAttack() + 50);
+        MonsterPool[monIndex].setHealth(MonsterPool[monIndex].getHealth() + 50);
+    }
     return monIndex;
 }
 
@@ -142,11 +154,24 @@ double dealDamage(Enemy& attacker, Enemy& defender){
     double attack = attacker.getAttack();
 
     if(defender.getHealth() > 0){
-        std::cout<<attacker.getName()<<" Strikes at "<<defender.getName()<<" for "<<attack<<" damage \n";
+        std::cout<<"\n=====================================\n";
+        std::cout<<attacker.getName()<<" Strikes at "<<defender.getName()<<" for "<<attack<<" damage ";
+        std::cout<<"\n=====================================\n";
         defender.setHealth(defender.getHealth() - attack);
     }
-
     return attack;
+}
+
+void Insult(Enemy& enemy, Enemy& player){
+    static const std::vector<std::string> insults {
+        "Stupid", "Poopyhead", "Ugly", "Lame", 
+        "Loser", "Idiot", "Childish", "Lanky",
+        "Fat", "Flat", "Boss baby"
+    };
+    std::string Insultnames{insults[Random::get<std::size_t>(0,insults.size() - 1)]};
+    std::cout<<player.getName()<<" insulted "<<enemy.getName()<<player.getName()<<" called them "<<Insultnames<<"\n";
+    enemy.setAttack(enemy.getAttack() - Insult_bonus);
+    std::cout<<enemy.getName()<<" Attack lowered to : "<<enemy.getAttack()<<"\n";
 }
 
 bool isDead(const Enemy& dead){
@@ -157,11 +182,19 @@ void deleteDead(std::vector<Enemy>& MonsterPool, std::size_t index){
     MonsterPool.erase(MonsterPool.begin() + index);
 }
 
-void AttackBoost(Enemy& player){
-    player.setAttack(player.getAttack() + 0.020);
-    std::cout <<player.getName()<< " gained an attack boost!\n";
-    std::cout << "New attack: " << player.getAttack() << "\n";
+void AttackBoost(Enemy& player, int choice){
+    if(choice == 5){
+        std::cout <<player.getName()<< " gained spirit after that successful Insult!\n";
+        player.setAttack(player.getAttack() + Attack_boost);
+        std::cout << "New permanent attack: " << player.getAttack() << "\n";
+    }
+    else{
+        player.setAttack(player.getAttack() + Attack_boost);
+        std::cout <<player.getName()<< " gained spirit after that successful attack!\n";
+        std::cout << "New permanent attack: " << player.getAttack() << "\n";
+    }
 }
+
 
 void printPlayerChoice(){
     std::cout<<"\n==== Your Turn! ====\n";
@@ -169,7 +202,9 @@ void printPlayerChoice(){
             std::cout << "1. Attack\n";
             std::cout << "2. Check status\n";
             std::cout << "3. Flee\n";
-            std::cout << "4. Bide <skip a turn to get a attack boost>\n";
+            std::cout << "4. Bide   <skip a turn to get a major attack boost>\n";
+            std::cout << "5. Insult <Lowers enemy attack stat>\n";
+            std::cout << "6. Brace  <Lowers enemy next attack>\n";
             std::cout << "Choice: ";
 }
 
@@ -181,9 +216,20 @@ void playerStatus(Enemy& player){
    }
 }
 
+int getEnemyChoice(){
+    int enemy_choice{};
+    int roll = Random::get(1, 100);
+    if(roll <= 60)          enemy_choice = 1; // attack
+    else if(roll <= 80)     enemy_choice = 2; // bide
+    else if(roll <= 95)     enemy_choice = 3; // brace
+    else                    enemy_choice = 4; // insult
+    return enemy_choice;
+}
+
 void Battle(std::vector<Enemy>& MonsterPool, Enemy& player){
     if(MonsterPool.empty()){
         std::cout<<"The monsterpool is empty\n";
+        return;
     }
 
 
@@ -196,7 +242,9 @@ void Battle(std::vector<Enemy>& MonsterPool, Enemy& player){
     int round{1};
     bool player_turn{true};
     bool bide{false};
-
+    bool brace{false};
+    bool enemy_bide{false};
+    bool enemy_brace{false};
 
     while(player.getHealth() > 0 && !MonsterPool.empty()){
         if(player_turn){
@@ -213,20 +261,26 @@ void Battle(std::vector<Enemy>& MonsterPool, Enemy& player){
             switch(choice){
                 case 1 :
                     if(bide){
-                        std::cout<<player.getName()<<" Releases a powerful Attack!\n";
-                    }
-                    dealDamage(player,enemy);
-                    if(isDead(enemy)){
-                        std::cout << "\n*** Victory! You defeated the enemy "<<enemy.getName()<<" ***\n";
-                        AttackBoost(player);
-                        gainEXP(player,enemy);
-                        deleteDead(MonsterPool,MonIndex);
-                        return;
-                    }
-                    if(bide){
+                        std::cout<<player.getName()<<" Releases a powerful attack!\n";
                         std::cout<<player.getName()<<" Bide has ended\n";
                         player.setAttack(player.getAttack() - bide_bonus);
                         bide = false;
+                    }
+                    if(enemy_brace){
+                        double brace_damage = std::max(0.0, player.getAttack() - brace_reduction);
+                        enemy.setHealth(enemy.getHealth() - brace_damage);
+                        std::cout<<"Braced reduced the attack to: "<<brace_damage<<"\n";
+                        enemy_brace = false;
+                    }
+                    else{
+                        dealDamage(player,enemy);
+                    }
+                    if(isDead(enemy)){
+                        std::cout << "\n*** Victory! You defeated the enemy "<<enemy.getName()<<" ***\n";
+                        AttackBoost(player,choice);
+                        gainEXP(player,enemy);
+                        deleteDead(MonsterPool,MonIndex);
+                        return;
                     }
                     break;
                 case 2:
@@ -245,9 +299,8 @@ void Battle(std::vector<Enemy>& MonsterPool, Enemy& player){
                         std::cout << "You failed to escape!\n";
                         // Enemy gets a free attack when flee fails
                         std::cout << enemy.getName() << " gets a free attack!\n";
-                        double damage = enemy.getAttack();
-                        player.setHealth(player.getHealth() - damage);
-                        std::cout << "You take " << damage << " damage!\n";
+                        dealDamage(enemy,player);
+                        std::cout << "You take " << dealDamage << " damage!\n";
                     }
                     break;
                 case 4 :
@@ -258,25 +311,65 @@ void Battle(std::vector<Enemy>& MonsterPool, Enemy& player){
                     bide = true;
                     std::cout<<player.getName()<<" attack increased temporarily to: "<<player.getAttack()<<"\n";
                     break;
+                case 5 :
+                    Insult(enemy,player);
+                    AttackBoost(player,choice);
+                    break;
+                case 6:
+                    brace = true;
+                    std::cout<<"You braced for an attack!\n";
+                    break;
                 default :
                     std::cout << "Invalid choice! You hesitate...\n";
                     break;
             }
         }
         else{
+            int enemy_choice{getEnemyChoice()};
             std::cout << "\n[ENEMY TURN]\n";
-            std::cout << enemy.getName() << " attacks you!\n";
-            dealDamage(enemy,player);
-            if(isDead(player)){
-                std::cout << "\n*** DEFEAT! " << enemy.getName() << " has defeated you! ***\n";
+            switch(enemy_choice){
+                case 1:
+                    std::cout << enemy.getName() << " attacks you!\n";
+                    if(enemy_bide){
+                        std::cout<<enemy.getName()<<" Releases a powerful attack!\n";
+                        std::cout<<enemy.getName()<<" Bide has ended\n";
+                        enemy.setAttack(enemy.getAttack() - bide_bonus);
+                        enemy_bide = false;
+                    }
+                    if(brace){
+                        double brace_damage = std::max(0.0, enemy.getAttack() - brace_reduction);
+                        player.setHealth(player.getHealth() - brace_damage);
+                        std::cout<<"Braced reduced the attack to: "<<brace_damage<<"\n";
+                        brace = false;
+                    }else{
+                        dealDamage(enemy,player);
+                    }
+                    if(isDead(player)){
+                        std::cout << "\n*** DEFEAT! " << enemy.getName() << " has defeated you! ***\n";
+                    }
+                    break;
+                case 2 :
+                    std::cout<<enemy.getName()<<" bide their attack!\n";
+                    std::cout << player.getName() << " gets a free attack!\n";
+                    dealDamage(player,enemy);
+                    enemy.setAttack(enemy.getAttack() + bide_bonus);
+                    enemy_bide = true;
+                    std::cout<<enemy.getName()<<" attack increased temporarily to: "<<enemy.getAttack()<<"\n";
+                    break;
+                case 3 :
+                    enemy_brace = true;
+                    std::cout<<enemy.getName()<<" braced for an attack!\n";
+                    break;
+                case 4 :
+                    Insult(player,enemy);
+                    break;
+                default :
+                    std::cout<<"The enemy hesitates\n";
+                    
             }
         }
 
         player_turn = !player_turn;
-        if(isDead(enemy)){
-            deleteDead(MonsterPool,MonIndex);
-        }
-
         std::cout << "\n[Battle Status]\n";
         std::cout<<player;
         std::cout<<enemy;
@@ -301,9 +394,11 @@ int main(){
     std::cin>>playerName;
     double getHealth{Random::get(Health_MIN_player,Health_MAX_player)};
     double getAttack{Random::get(Attack_MIN,Attack_MAX)};
-    Enemy player{playerName, getHealth, getAttack,1};
+    int level{Random::get(1,3)};
+    double exp{50.0};
+    Enemy player{playerName, getHealth, getAttack,exp,level};
 
-    std::cout<<"\nWelome "<<playerName<<"\n";
+    std::cout<<"\nWelcome "<<playerName<<"\n";
     std::cout<<Monsterpool.size()<<" amount of Monsters in the area\n";
 
     while(player.getHealth() > 0 && !Monsterpool.empty()){
@@ -332,7 +427,8 @@ int main(){
 
     if (player.getHealth() <= 0) {
         std::cout << "\nGAME OVER! You have been defeated.\n";
-    } else if (Monsterpool.empty()) {
+    }
+    else if (Monsterpool.empty()) {
         std::cout << "\nCONGRATULATIONS! You cleared all monsters!\n";
     }
     
