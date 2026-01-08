@@ -29,7 +29,7 @@ class Enemy{
     double m_exp{0.0};
     int m_level{0};
     public:
-        Enemy(std::string name = "none", double health = 0.0, double attack = 0.0, double exp = 0.0, int level = 0)
+        explicit Enemy(std::string name = "none", double health = 0.0, double attack = 0.0, double exp = 0.0, int level = 0)
         : m_name{name}, m_health{health}, m_attack{attack}, m_exp{exp}, m_level{level}
         {}
 
@@ -384,55 +384,64 @@ void Battle(std::vector<Enemy>& MonsterPool, Enemy& player){
 
 
 int main(){
-    int diff{0};
-    std::cout<<"Enter your difficulty < 1 for easy, 2 for medium and 3 for Hard >: ";
-    std::cin>>diff;
-    std::vector<Enemy> Monsterpool;
-    setMonsterPool(Monsterpool,diff);
-    std::string playerName;
-    std::cout << "Enter your name: ";
-    std::cin>>playerName;
-    double getHealth{Random::get(Health_MIN_player,Health_MAX_player)};
-    double getAttack{Random::get(Attack_MIN,Attack_MAX)};
-    int level{Random::get(1,3)};
-    double exp{50.0};
-    Enemy player{playerName, getHealth, getAttack,exp,level};
+    while(true){
+        int diff{0};
+        std::cout<<"Enter your difficulty < 1 for easy, 2 for medium and 3 for Hard >: ";
+        std::cin>>diff;
+        std::vector<Enemy> Monsterpool;
+        setMonsterPool(Monsterpool,diff);
+        std::string playerName;
+        std::cout << "Enter your name: ";
+        std::cin>>playerName;
+        double getHealth{Random::get(Health_MIN_player,Health_MAX_player)};
+        double getAttack{Random::get(Attack_MIN,Attack_MAX)};
+        int level{Random::get(1,3)};
+        double exp{50.0};
+        Enemy player{playerName, getHealth, getAttack,exp,level};
 
-    std::cout<<"\nWelcome "<<playerName<<"\n";
-    std::cout<<Monsterpool.size()<<" amount of Monsters in the area\n";
+        std::cout<<"\nWelcome "<<playerName<<"\n";
+        std::cout<<Monsterpool.size()<<" amount of Monsters in the area\n";
 
-    while(player.getHealth() > 0 && !Monsterpool.empty()){
-        Battle(Monsterpool,player);
-        if(player.getHealth() > 0 && !Monsterpool.empty()){
-            std::cout<<Monsterpool.size()<<" amount of Monsters remaining\n";
-            std::cout << "Continue fighting? (y/n): ";
-            char choice;
-            std::cin >> choice;
-            if(!std::cin){
-                std::cin.clear(); 
-                ignoreLine();  
-                std::cout << "Invalid input! Please enter the correct choice!.\n";
-                continue;
-            }
-            ignoreLine();
-            if(choice != 'y' && choice != 'Y' && choice != 'n' && choice != 'N' ){
-                std::cout<<"Please out the correct input!\n";
-                continue;
-            }
-            if(choice != 'Y' && choice != 'y'){
-                break;
-            }
-        } 
+        while(player.getHealth() > 0 && !Monsterpool.empty()){
+            Battle(Monsterpool,player);
+            if(player.getHealth() > 0 && !Monsterpool.empty()){
+                std::cout<<Monsterpool.size()<<" amount of Monsters remaining\n";
+                std::cout << "Continue fighting? (y/n): ";
+                char choice;
+                std::cin >> choice;
+                if(!std::cin){
+                    std::cin.clear(); 
+                    ignoreLine();  
+                    std::cout << "Invalid input! Please enter the correct choice!.\n";
+                    continue;
+                }
+                ignoreLine();
+                if(choice != 'y' && choice != 'Y' && choice != 'n' && choice != 'N' ){
+                    std::cout<<"Please out the correct input!\n";
+                    continue;
+                }
+                if(choice != 'Y' && choice != 'y'){
+                    break;
+                }
+            } 
+        }
+
+        if (player.getHealth() <= 0) {
+            std::cout << "\nGAME OVER! You have been defeated.\n";
+        }
+        else if (Monsterpool.empty()) {
+            std::cout << "\nCONGRATULATIONS! You cleared all monsters!\n";
+        }
+
+        std::cout<<"Enter q to quit and r to play again: ";
+        char choice_play{'?'};
+        std::cin>>choice_play;
+        if(choice_play == 'r'){
+            continue;
+        }
+        else{
+            return false;
+        }
     }
-
-    if (player.getHealth() <= 0) {
-        std::cout << "\nGAME OVER! You have been defeated.\n";
-    }
-    else if (Monsterpool.empty()) {
-        std::cout << "\nCONGRATULATIONS! You cleared all monsters!\n";
-    }
-    
-    return 0;
-
 }
 
