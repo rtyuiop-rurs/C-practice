@@ -59,8 +59,6 @@ class Direction{
             case right : return Direction{left};  
             default    : break;
         }
-
-        assert(0 && "Unsupported direction was passed!");
         return Direction{up};
     }
 
@@ -129,7 +127,7 @@ class Board{
 
             for(int y{0}; y < s_size; ++y){
                 for(int x{0}; x < s_size; ++x){
-                    std::cout<<b1.tile[y][x]<<" ";
+                    std::cout<<"| __"<<b1.tile[y][x]<<"__ |";
                 }
                 std::cout<<"\n";
             }
@@ -244,6 +242,7 @@ int main(){
     Board board{};
     board.RandomizeBoard();
     std::cout<<board;
+    int moves{0};
 
     std::cout<<"Enter a command: ";
     while(!board.playerWon()){
@@ -254,14 +253,16 @@ int main(){
         }
         if(input == 'q'){
             std::cout<<"\n\nBye!\n\n";
+            return false;
         }
 
         Direction dir{ UserInput::getDirection(input) };
-        std::cout << "You entered direction: " << dir << '\n';
 
         bool isMoved{board.moveTile(dir)};
         if(isMoved){
-            std::cout<<board;
+            moves++;
+            std::cout<<board<<"\n";
+            std::cout<<"Your moves: "<<moves<<"\n";
         }
 
     }
