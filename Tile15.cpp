@@ -92,7 +92,7 @@ struct Point{
     }
 
     friend bool operator!=(Point mx, Point my){
-        return (mx != my);
+        return !(mx == my);
     }
 
     Point getAdjacentPoint(Direction d1) const{
@@ -127,9 +127,9 @@ class Board{
 
             for(int y{0}; y < s_size; ++y){
                 for(int x{0}; x < s_size; ++x){
-                    std::cout<<"| __"<<b1.tile[y][x]<<"__ |";
+                    out <<"| __"<<b1.tile[y][x]<<"__ |";
                 }
-                std::cout<<"\n";
+                out <<"\n";
             }
 
             return out;
@@ -192,18 +192,20 @@ class Board{
 
 };
 
+void ignoreLine(){
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
 
 namespace UserInput{
-    void ignoreLine(){
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
 
     bool ValidInput(char ch){
         return ch == 'w' 
             || ch == 'a'
             || ch == 's'
             || ch == 'd'
-            || ch == 'q';
+            || ch == 'q'
+            || ch == 'p';
     }
 
     char getInput(){
@@ -214,7 +216,7 @@ namespace UserInput{
     }
 
     char getCommandFromUser(){
-        char ch;
+        char ch{};
         while(!ValidInput(ch)){
             ch = getInput();
         }
@@ -231,7 +233,7 @@ namespace UserInput{
             default  : break;
         }
 
-        return Direction::MaxDirections;
+        return Direction::up;
     }
 
 }
@@ -239,33 +241,61 @@ namespace UserInput{
 
 
 int main(){
-    Board board{};
-    board.RandomizeBoard();
-    std::cout<<board;
-    int moves{0};
+    while(true){
+        Board board{};
+        board.RandomizeBoard();
+        std::cout<<board;
+        int moves{0};
 
-    std::cout<<"Enter a command: ";
-    while(!board.playerWon()){
-        char input{UserInput::getCommandFromUser()};
+        std::cout<<"Enter a command: ";
+        while(!board.playerWon()){
+            char input{UserInput::getCommandFromUser()};
 
-        if(UserInput::ValidInput(input)){
-            std::cout<<"valid input: "<<input<<"\n";
+            if(UserInput::ValidInput(input)){
+                std::cout<<"valid input: "<<input<<"\n";
+            }
+            if(input == 'q'){
+                std::cout<<"\n\nBye!\n\n";
+                break;
+            }
+            if(input == 'p'){
+                board = Board{};
+                continue;
+            }
+
+            Direction dir{ UserInput::getDirection(input) };
+
+            bool isMoved{board.moveTile(dir)};
+            if(isMoved){
+                moves++;
+                std::cout<<board<<"\n";
+                std::cout<<"Your moves: "<<moves<<"\n";
+                if(moves >= 500 && !board.playerWon()){
+                    std::cout<<"\n\nYou lost!\n\n";
+                    break;
+                }
+            }
         }
-        if(input == 'q'){
-            std::cout<<"\n\nBye!\n\n";
+
+        if(board.playerWon()){
+            std::cout<<"\n\nYou win\n\n";
+        }
+
+        char choice{'?'};
+        std::cout<<"Enter r to play again and q to quit: ";
+        std::cin>>choice;
+        while(!std::cin || (choice != 'r' && choice != 'q')){
+            std::cin.clear(); 
+            ignoreLine();  
+            std::cout << "Invalid input! Please enter the correct choice!.\n";
+            std::cin>>choice;
+        }
+        ignoreLine();
+        if(choice == 'r'){
+            continue;
+        }
+        else if(choice == 'q'){
             return false;
         }
-
-        Direction dir{ UserInput::getDirection(input) };
-
-        bool isMoved{board.moveTile(dir)};
-        if(isMoved){
-            moves++;
-            std::cout<<board<<"\n";
-            std::cout<<"Your moves: "<<moves<<"\n";
-        }
-
     }
-
-    std::cout<<"\n\nYou won!\n\n";
 }

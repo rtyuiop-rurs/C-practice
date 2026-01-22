@@ -29,7 +29,7 @@ class Enemy{
     double m_exp{0.0};
     int m_level{0};
     public:
-        explicit Enemy(std::string name = "none", double health = 0.0, double attack = 0.0, double exp = 0.0, int level = 0)
+        Enemy(std::string name = "none", double health = 0.0, double attack = 0.0, double exp = 0.0, int level = 0)
         : m_name{name}, m_health{health}, m_attack{attack}, m_exp{exp}, m_level{level}
         {}
 
