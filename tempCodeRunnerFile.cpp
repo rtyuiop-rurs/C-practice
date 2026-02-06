@@ -1,2 +1,2 @@
 
-    public:
+int main(){

@@ -68,7 +68,7 @@ void addStudent(std::vector<StudentArray>& student){
             grade = 'A';
         }
 
-       student.push_back(StudentArray(name,score,grade,id));
+       student.emplace_back(StudentArray(name,score,grade,id));
     }
 }
 
@@ -90,7 +90,6 @@ void printStudent(std::vector<StudentArray>& a){
 }
 
 void searchName(std::vector<StudentArray>& a){
-    StudentArray b;
     std::string name{"none"};
     std::cout<<"Enter the name of the Student: ";
     std::cin >> name;
@@ -111,7 +110,6 @@ void searchName(std::vector<StudentArray>& a){
 }
 
 void searchID(std::vector<StudentArray>& a){
-    StudentArray b;
     int id{0};
     std::cout<<"Enter the id of the student: ";
     std::cin>>id;
@@ -212,24 +210,25 @@ int main(){
         if(choice == '+'){
             addStudent(student);
         }
-        if(choice == '-'){
+        else if(choice == '-'){
             deleteIndex(student);
         }
-        if(choice == 'S'){
+        else if(choice == 'S'){
             getSearch(student);
         }
-        if(choice == 'P'){
+        else if(choice == 'P'){
             printStudent(student);
         }
-        if(choice == 'C'){
+        else if(choice == 'C'){
             std::sort(student.begin(),student.end(),comparison());
         }
-        if(choice == 'E'){
+        else if(choice == 'E'){
             std::cout<<"Goodbye!";
             break;
         }
         else{
             std::cout<<"Invalid input!";
+            continue;
         }
     }
 }
