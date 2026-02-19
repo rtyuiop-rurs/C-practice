@@ -11,9 +11,17 @@ class Monster{
         std::cout<<"Monster initialized\n";
     }
 
-    const std::string& getName() const {return m_name;};
-    int getNOL() const {return m_nol;};
+    virtual const std::string& getName() const {return m_name;};
+    virtual int getNOL() const {return m_nol;};
     
+    virtual std::ostream& print(std::ostream& out) const {
+        out << "Monster ";
+        return out;
+    }
+
+    friend std::ostream& operator<<(std::ostream& out, const Monster& m1){
+        return m1.print(out);
+    }
 };
 
 class Spider : public Monster{
@@ -25,19 +33,12 @@ class Spider : public Monster{
     : m_eyes{eyes}, m_fangs{fangs}, Monster{name,legs}
     {
         std::cout<<"Spider initialized\n";
-    }
+    } 
 
-    friend std::ostream& operator<<(std::ostream& out, Spider j1){
-        out <<" Name: "
-        << j1.getName() <<"\n"<<" Legs: "
-        << j1.getNOL() <<"\n"<< " Eyes: "
-        << j1.m_eyes <<"\n"<<" Fangs: "
-        << j1.m_fangs <<"\n";
+    friend std::ostream& operator<<(std::ostream& out, const Spider& s1){
+        out << "Spider named: "<< s1.getName() <<" eyes: "<<s1.m_eyes<<" fangs: "<<s1.m_fangs<<" legs: "<<s1.getNOL();
         return out;
     }
-
-    int getEyes() const {return m_eyes;};
-    int getFangs() const {return m_fangs;}; 
 };
 
 class Centipede : public Spider{
@@ -49,21 +50,37 @@ class Centipede : public Spider{
         std::cout<<"Centipede Initialized!\n";
     }
 
-    friend std::ostream& operator<<(std::ostream& out,  Centipede j1){
-        out <<" Name: "
-        << j1.getName() <<"\n"<<" Legs: "
-        << j1.getNOL() <<"\n"<< " Eyes: "
-        << j1.getEyes() <<"\n"<<" Fangs: "
-        << j1.getFangs() <<"\n"<<" Body Part: "
-        << j1.body_section <<"\n";
+    friend std::ostream& operator<<(std::ostream& out, const Centipede& c1){
+        out << "Centipede named: "<<c1.getName()<<" legs:  "<<c1.getNOL()<<" body parts: "<<c1.body_section;
+        return out;
+    }
+
+};
+
+class Print : public Monster{
+    Spider s1{};
+    Centipede c1{};
+
+    public:
+
+    Print(const Spider& ss1, const Centipede& cc1)
+    : s1{ss1}, c1{cc1}
+    {}
+
+    std::ostream& print(std::ostream& out) const override{
+        out << s1 <<"\n";
+        out << c1 <<"\n";
         return out;
     }
 };
 
-
 int main(){
-    Spider joe{8,2,8,"Joe"};
-    Centipede Malina{"Malina",2,2,100,50};
-    std::cout<<joe;
-    std::cout<<Malina;
+    Monster m{};
+    std::cout<<m;
+
+    Print Monsters{Spider{8,2,8,"John"},Centipede{"Jim",2,2,100,50} };
+    std::cout<<Monsters<<"\n";
+
+    Monster& ms1{Monsters};
+    std::cout<<ms1;
 }

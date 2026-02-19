@@ -15,6 +15,8 @@ protected:
         : m_name{ name }    
     {}
 
+    virtual ~Animal() = default;
+
 public:
     std::string_view getName() const { return m_name; }
     virtual std::string_view speak() const { return "???";};
@@ -25,12 +27,12 @@ class Cat: public Animal
 {
 public:
     Cat(std::string_view name)
-        : Animal{ name}
+        : Animal{name}
     {
     }
 
-    std::string_view speak()  { return "Meow"; }
-    Cat* legs() const  override  {std::cout<<"Cat has 4 legs"; return nullptr;};
+    std::string_view speak() const { return "Meow"; }
+    Cat* legs() const  override  {std::cout<<"4 legs"; return nullptr;};
 };
 
 class Dog: public Animal
@@ -42,7 +44,7 @@ public:
     }
 
     std::string_view speak() const { return "Woof"; };
-    Dog* legs() const override {std::cout<<"Dog has 4 legs"; return nullptr;};
+    Dog* legs() const override {std::cout<<"legs"; return nullptr;};
 };
 
 class Bird : public Animal{
@@ -52,7 +54,7 @@ class Bird : public Animal{
     {}
 
     std::string_view speak() const {return "Chirp";};
-    Bird* legs() const  override {std::cout<<"Bird has 2 legs"; return nullptr;};
+    Bird* legs() const  override {std::cout<<"2 legs"; return nullptr;};
 };
 
 
@@ -74,7 +76,7 @@ int main(){
     for (const auto animal : animals)
     {
         std::cout << animal->getName() << " says " << animal->speak() << '\n';
-        std::cout<< animal->getName() << "has "    << animal->legs()  << "\n";
+        std::cout<< animal->getName() << " has "    << animal->legs()  << "\n";
     }
 
     return 0;

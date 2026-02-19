@@ -1,2 +1,2 @@
 
-int main(){
+    std::cout << m1<<"\n";
