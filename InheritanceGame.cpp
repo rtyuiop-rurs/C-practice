@@ -252,10 +252,13 @@ class Enemy : public Monster{
 
     static std::unique_ptr<Monster> getRandomEnemy(char Type){
         int ran{0};
-        if(Type == 'B'){
+        if(Type == 'E'){
             ran  = Random::get(0, 4);
-        }else if(Type == 'A'){
+        }else if(Type == 'M'){
             ran = Random::get(5, Max_Type - 1);
+        }
+        else if(Type == 'H'){
+            ran = Random::get(0, Max_Type -1);
         }
         std::size_t index{static_cast<std::size_t>(ran)};
         return std::make_unique<Enemy>(
@@ -336,7 +339,7 @@ void insultEnemy(Monster& m1, Monster& p1){
 
 enum class ActorAction{
     Attack,
-    Check_status,
+    Shop,
     Flee,
     Bide,
     Insult,
@@ -372,9 +375,15 @@ Shop getPlayerCart(Player& p1){
     while(true){
         printRoscoeShop();
         std::cin>>choice;
+        if(!std::cin){
+            std::cin.clear();
+            ignoreLine();
+            std::cout<<"Invalid choice";
+            continue;
+        }
         if(choice == 1){
-            if(p1.getGold() >= 0){
-                p1.TakeGold(0);
+            if(p1.getGold() >= 100){
+                p1.TakeGold(100.0);
                 return Shop::Defense_Drink;
             }
             else{
@@ -479,7 +488,7 @@ void printPlayerchoice(){
     std::cout<<"\n==== Your Turn! ====\n";
         std::cout << "Choose action:\n";
         std::cout << "1. Attack\n";
-        std::cout << "2. Check status\n";
+        std::cout << "2. Go to Roscoe Shop\n";
         std::cout << "3. Flee\n";
         std::cout << "4. Bide   <skip a turn to get a major attack boost>\n";
         std::cout << "5. Insult <Lowers enemy attack stat>\n";
@@ -499,7 +508,7 @@ ActorAction getPlayerAction(){
     }
     switch(choice){
         case 1 : return ActorAction::Attack;
-        case 2 : return ActorAction::Check_status;
+        case 2 : return ActorAction::Shop;
         case 3 : return ActorAction::Flee;
         case 4 : return ActorAction::Bide;
         case 5 : return ActorAction::Insult;
@@ -534,7 +543,7 @@ bool resolvePlayerAction(Player& p1, Monster& enemy, ActorAction PlayerAction){
                 return true;
             }
         break;
-        case ActorAction::Check_status : std::cout<<p1;
+        case ActorAction::Shop : ResolvePlayerCart(p1,getPlayerCart(p1));
         break;
         case ActorAction::Flee : runAway(p1);
         break;
@@ -588,10 +597,6 @@ void BattleLoop(Player& p1, Monster& m1){
         else{
             battleEnd = resolveEnemyAction(m1,p1,getEnemyAction(m1,p1));
         }
-        if(Random::get(1,100) > 95){
-            ResolvePlayerCart(p1,getPlayerCart(p1));
-        }
-
         player_turn = !player_turn;
 
         if(rounds > 5){
@@ -608,13 +613,24 @@ void BattleLoop(Player& p1, Monster& m1){
     
 }
 
+void printStatus(Player& p1){
+    std::cout<<"\n\n=====Status=====\n\n";
+    std::cout<<p1<<"\n";
+    std::cout<<"\n================\n";
+}
+
 int main(){
     std::string name{"none"};
+    char diff{'?'};
     std::cout<<"Enter your name: ";
     std::cin>>name;
     Player p1{name};
-    while(!p1.hasWon('E')){
-        auto Enemy = Enemy::getRandomEnemy('B');
+    std::cout<<"Enter difficulty <E for easy, M for medium and H for hard> ";
+    std::cin>>diff;
+    while(!p1.hasWon(diff)){
+        auto Enemy = Enemy::getRandomEnemy(diff);
         BattleLoop(p1,*Enemy);
+        ResolvePlayerCart(p1,getPlayerCart(p1));
+        printStatus(p1);
     }
 }
