@@ -162,11 +162,11 @@ class Player : public Monster{
 
     bool hasWon(const char diff){
         switch(diff){
-            case 'E' : return m_level == 15;
+            case 'E' : return m_level == 10;
             break;
-            case 'M' : return m_level == 25;
+            case 'M' : return m_level == 15;
             break;
-            case 'H' : return m_level == 35;
+            case 'H' : return m_level == 25;
         }
 
         return false;
@@ -254,10 +254,10 @@ class Enemy : public Monster{
         int ran{0};
         if(Type == 'E'){
             ran  = Random::get(0, 4);
-        }else if(Type == 'M'){
+        }else if(Type == 'H'){
             ran = Random::get(5, Max_Type - 1);
         }
-        else if(Type == 'H'){
+        else if(Type == 'M'){
             ran = Random::get(0, Max_Type -1);
         }
         std::size_t index{static_cast<std::size_t>(ran)};
@@ -286,7 +286,7 @@ void DealDamageEnemy(Monster& p1, Monster& m1){
     if(!m1.isDead()){
         std::cout<<m1.getName()<<" Health: "<<m1.getHealth()<<"\n";
     }
-};
+}
 
 void DealDamagePlayer(Monster& m1, Monster& p1){
     std::cout<<"\n=====================================\n";
@@ -364,7 +364,7 @@ void printRoscoeShop(){
     std::cout << "2. Attack drink  <100g> <Permanently increases attack by 10pts>\n";
     std::cout << "3. Sword         <300g> <Permanently increases attack by 35pts>\n";
     std::cout << "4. Shield        <300g> <Permanently increases defense by 35pts>\n";
-    std::cout << "5. Chest Armor   <500g> <Permanently increses defense by 55pts>\n";
+    std::cout << "5. Chest Armor   <500g> <Permanently increases defense by 55pts>\n";
     std::cout << "6. Axe           <500g> <Permanently increases attack by 55pts>\n";
     std::cout << "\n7. Exit Shop\n";
     std::cout << "Choice: ";
@@ -627,10 +627,17 @@ int main(){
     Player p1{name};
     std::cout<<"Enter difficulty <E for easy, M for medium and H for hard> ";
     std::cin>>diff;
-    while(!p1.hasWon(diff)){
+    bool battle{false};
+    while(!p1.hasWon(diff) && !p1.isDead()){
         auto Enemy = Enemy::getRandomEnemy(diff);
         BattleLoop(p1,*Enemy);
-        ResolvePlayerCart(p1,getPlayerCart(p1));
         printStatus(p1);
+    }
+
+    if(p1.isDead()){
+        std::cout<<"You have died and you are left with "<<p1.getGold()<<" gold\n";
+    }
+    else if(p1.hasWon(diff)){
+        std::cout<<"Congrats! You've survived and carried with you "<<p1.getGold()<<" amount of gold\n";
     }
 }
