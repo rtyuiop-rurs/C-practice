@@ -5,9 +5,9 @@
 #include<algorithm>
 #include"Random.h"
 
-constexpr double lvlUP{35};
-constexpr double dmgBoost{15};
-constexpr double dfsBoost{10};
+constexpr double lvlUP{35.00};
+constexpr double dmgBoost{15.00};
+constexpr double dfsBoost{10.00};
 
 void ignoreLine(){
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -76,7 +76,6 @@ class Monster{
         }
     }
 
-
     void clearBoost(){
        m_current_Attack = m_attack;
        m_current_Defense = m_defense;
@@ -105,15 +104,26 @@ class Monster{
 class Player : public Monster{
     int m_level;
     int m_exp;
+    double MAX_HEALTH;
     public:
     Player(const std::string_view name, const char type = '@', double health = 150.00, double attack = 60.00, double defense = 60.00, int level = 1, int exp = 0, double gold = 0.0)
-    : Monster{name, type, health, attack, defense, exp, gold}, m_level{level}, m_exp{exp}
+    : Monster{name, type, health, attack, defense, exp, gold}, m_level{level}, m_exp{exp}, MAX_HEALTH{health}
     {}
 
     void gainXP(int amount){
         m_exp += amount;
         std::cout<<"You gained "<<amount<<" of EXP!\n";
         checkLevelUP();
+    }
+
+    void heal(double amount){
+        if(m_health < MAX_HEALTH){
+            m_health = std::min(MAX_HEALTH, m_health + amount);
+            std::cout<<"You healed up by "<<amount<<" amount!\n";
+        }
+        else{
+            std::cout<<"Health is at Maximum already\n";
+        }
     }
 
     void checkLevelUP(){
@@ -145,17 +155,19 @@ class Player : public Monster{
 
         m_current_Attack = m_attack;
         m_current_Defense = m_defense;
+        MAX_HEALTH = m_health;
     }
 
     void ChangeAttack(double boost){
         m_attack += boost;
+        std::cout<<"Your attack is boosted permanenty by "<<boost<<" amount\n";
         m_current_Attack = m_attack;
     }
 
     void ChangeDefense(double boost){
         m_defense += boost;
+        std::cout<<"Your defence is boosted permanently by "<<boost<<" amount\n";
         m_current_Defense = m_defense;
-        std::cout<<"Defence increased to "<<m_defense<<"\n";
     }
 
     int getLevel() const {return m_level;};
@@ -354,6 +366,9 @@ enum class Shop{
     Shield,
     Chest_Armor,
     Axe,
+    Health_drink_small,
+    Health_drink_medium,
+    Health_drink_large,
     Invalid,
 };
 
@@ -366,13 +381,17 @@ void printRoscoeShop(){
     std::cout << "4. Shield        <300g> <Permanently increases defense by 35pts>\n";
     std::cout << "5. Chest Armor   <500g> <Permanently increases defense by 55pts>\n";
     std::cout << "6. Axe           <500g> <Permanently increases attack by 55pts>\n";
-    std::cout << "\n7. Exit Shop\n";
+    std::cout << "7. [S]health drink <40g> <Recovers Health by 20pts>\n";
+    std::cout << "8. [M]health drink <80g> <Recovers Health by 60pts>\n";
+    std::cout << "9. [L]health drink <100g> <Recovers Health by 80pts>\n";
+    std::cout << "\n0. Exit Shop\n";
     std::cout << "Choice: ";
 }
 
 Shop getPlayerCart(Player& p1){
     int choice{};
     while(true){
+        std::cout<<"The amount of gold you have : "<<p1.getGold()<<"\n";
         printRoscoeShop();
         std::cin>>choice;
         if(!std::cin){
@@ -442,6 +461,36 @@ Shop getPlayerCart(Player& p1){
             }
         }
         else if(choice == 7){
+            if(p1.getGold() >= 40){
+                p1.TakeGold(40.00);
+                return Shop::Health_drink_small;
+            }
+            else{
+                std::cout<<"Sorry you can't afford this!\n";
+                continue;
+            }
+        }
+        else if(choice == 8){
+            if(p1.getGold() >= 80){
+                p1.TakeGold(80.00);
+                return Shop::Health_drink_medium;
+            }
+            else{
+                std::cout<<"Sorry you can't afford this!\n";
+                continue;
+            }
+        }
+        else if(choice == 9){
+            if(p1.getGold() >= 100){
+                p1.TakeGold(100.00);
+                return Shop::Health_drink_large;
+            }
+            else{
+                std::cout<<"Sorry you can't afford this!\n";
+                continue;
+            }
+        }
+        else if(choice == 0){
             break;
         }
         else{
@@ -478,6 +527,19 @@ bool ResolvePlayerCart(Player& p1, Shop playerCart){
         case Shop::Axe : 
             p1.ChangeAttack(55);
             return false;
+        break;
+        case Shop::Health_drink_small :
+            p1.heal(20);
+            return false;
+        break;
+        case Shop::Health_drink_medium :
+            p1.heal(40);
+            return false;
+        break;
+        case Shop::Health_drink_large :
+            p1.heal(60);
+            return false;
+        break;
     }
 
     return false;
@@ -545,7 +607,13 @@ bool resolvePlayerAction(Player& p1, Monster& enemy, ActorAction PlayerAction){
         break;
         case ActorAction::Shop : ResolvePlayerCart(p1,getPlayerCart(p1));
         break;
-        case ActorAction::Flee : runAway(p1);
+        case ActorAction::Flee : 
+            if(runAway(p1)){
+                return true;
+            }
+            else{
+                return false;
+            }
         break;
         case ActorAction::Bide : Bide(p1,enemy);
         break;
@@ -614,9 +682,9 @@ void BattleLoop(Player& p1, Monster& m1){
 }
 
 void printStatus(Player& p1){
-    std::cout<<"\n\n=====Status=====\n\n";
-    std::cout<<p1<<"\n";
-    std::cout<<"\n================\n";
+    std::cout<<"\n=====Status=====\n";
+    std::cout<<p1;
+    std::cout<<"\n================\n";   
 }
 
 int main(){
@@ -632,6 +700,8 @@ int main(){
         auto Enemy = Enemy::getRandomEnemy(diff);
         BattleLoop(p1,*Enemy);
         printStatus(p1);
+        std::cout<<"Press Enter to continue: "<<"\n";
+        ignoreLine();
     }
 
     if(p1.isDead()){
