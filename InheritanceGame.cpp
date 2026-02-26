@@ -3,6 +3,7 @@
 #include<string>
 #include<memory>
 #include<algorithm>
+#include<limits>
 #include"Random.h"
 
 constexpr double lvlUP{35.00};
@@ -537,7 +538,7 @@ bool ResolvePlayerCart(Player& p1, Shop playerCart){
             return false;
         break;
         case Shop::Health_drink_large :
-            p1.heal(60);
+            p1.heal(80);
             return false;
         break;
     }
